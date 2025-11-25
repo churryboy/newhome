@@ -182,7 +182,7 @@ body {
     background: transparent;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 0 var(--space-base);
     color: var(--color-neutral-10);
     width: 100%;
@@ -229,7 +229,7 @@ body {
     background: transparent;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     padding: 0 var(--space-base);
     width: 100%;
 }
@@ -277,6 +277,7 @@ body {
 }
 
 .profile-right {
+    margin-left: auto;
     display: flex;
     align-items: center;
     gap: var(--space-base);
@@ -397,7 +398,7 @@ body {
 .calendar-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     margin-bottom: var(--space-base);
 }
 
@@ -431,6 +432,14 @@ body {
 
 .calendar-nav-btn:active {
     transform: scale(0.95);
+}
+
+.calendar-view.collapsed #collapseBtn svg {
+    transform: rotate(180deg);
+
+.calendar-nav-btn svg {
+    transition: transform 0.3s ease;
+}
 }
 
 .calendar-weekdays {
@@ -477,7 +486,7 @@ body {
 .calendar-day::before {
     content: '';
     display: block;
-    padding-bottom: 71.34%;
+    padding-bottom: 100%;
 }
 
 .calendar-day-number {
@@ -582,10 +591,6 @@ body {
     margin-bottom: var(--space-xxxs);
 }
 
-.upcoming-event-time {
-    font-size: 12px;
-    color: var(--color-neutral-50);
-}
 
 /* Selected Date Events Panel */
 .selected-date-events {
@@ -596,7 +601,7 @@ body {
 
 .selected-date-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: var(--space-base);
 }
@@ -611,7 +616,7 @@ body {
     border-radius: var(--radius-sm);
     padding: var(--space-sm);
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     transition: all 0.2s ease;
 }
@@ -703,6 +708,79 @@ body {
 
 .widget-card-small:active {
     transform: scale(0.98);
+}
+
+.widget-small-content {
+    padding: var(--space-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: var(--space-xs);
+}
+
+.widget-small-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-neutral-50);
+}
+
+.widget-small-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary-50);
+}
+
+.widget-friends-content {
+    padding: var(--space-base);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: var(--space-sm);
+}
+
+.widget-friends-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--color-neutral-40);
+    text-align: center;
+}
+
+.widget-friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    flex: 1;
+}
+
+.friend-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: var(--space-xs);
+    background: var(--color-neutral-95);
+    border-radius: var(--radius-sm);
+    gap: var(--space-xs);
+}
+
+.friend-nickname {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-neutral-20);
+    flex-shrink: 0;
+}
+
+.friend-emoji {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.friend-activity {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--color-neutral-50);
+    margin-left: auto;
 }
 
 /* ============================================
@@ -1253,7 +1331,7 @@ body {
 
 .event-modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: var(--space-lg);
     border-bottom: 1px solid var(--color-neutral-90);
@@ -1386,7 +1464,6 @@ body {
     
     .calendar-day {
         padding: var(--space-xxs);
-        min-height: 50px;
     }
     
     .calendar-day-number {

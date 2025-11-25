@@ -26,6 +26,7 @@ class DDayManager {
         this.updateStatusBar();
         this.renderCalendar();
         this.updateStats();
+        this.setYesterdayStudyTime();
         this.checkServerConnection();
     }
 
@@ -71,7 +72,6 @@ class DDayManager {
         const uploadButton = document.getElementById('uploadButton');
         const fileInput = document.getElementById('fileInput');
         const saveButton = document.getElementById('saveButton');
-        const clearAllButton = document.getElementById('clearAllButton');
         
         // Event Modal
         const closeEventModal = document.getElementById('closeEventModal');
@@ -83,7 +83,6 @@ class DDayManager {
         uploadButton.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         saveButton.addEventListener('click', () => this.saveEvent());
-        clearAllButton.addEventListener('click', () => this.clearAllEvents());
         
         if (closeEventModal) {
             closeEventModal.addEventListener('click', () => this.closeEventModal());
@@ -405,9 +404,14 @@ class DDayManager {
     }
 
     renderCalendar() {
+        // If collapsed, show week view
+        if (this.isCalendarCollapsed) {
+            this.renderWeekView();
+            return;
+        }
+
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarGrid = document.getElementById('calendarGrid');
-        const clearAllButton = document.getElementById('clearAllButton');
 
         // Update title
         const year = this.currentDate.getFullYear();
@@ -474,7 +478,6 @@ class DDayManager {
         }
 
         calendarGrid.innerHTML = html;
-        clearAllButton.style.display = this.events.length > 0 ? 'block' : 'none';
         
         // Render upcoming events
         this.renderUpcomingEvents();
@@ -484,14 +487,15 @@ class DDayManager {
         const upcomingEventsList = document.getElementById('upcomingEventsList');
         if (!upcomingEventsList) return;
         
-        // Get upcoming events (max 2)
+        // Get upcoming events (max 2, or 1 if collapsed)
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         
+        const maxEvents = this.isCalendarCollapsed ? 1 : 2;
         const upcomingEvents = this.events
             .filter(e => new Date(e.date) >= today)
             .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, 2);
+            .slice(0, maxEvents);
         
         if (upcomingEvents.length === 0) {
             upcomingEventsList.innerHTML = `
@@ -516,7 +520,6 @@ class DDayManager {
             return `
                 <div class="upcoming-event-card ${colorClass}">
                     <div class="upcoming-event-title">${event.title}</div>
-                    <div class="upcoming-event-time">${dateStr}${timeStr ? ' • ' + timeStr : ''}</div>
                 </div>
             `;
         }).join('');
@@ -527,7 +530,6 @@ class DDayManager {
     renderWeekView() {
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarGrid = document.getElementById('calendarGrid');
-        const clearAllButton = document.getElementById('clearAllButton');
 
         // Get today's date
         const today = new Date();
@@ -568,15 +570,14 @@ class DDayManager {
             html += `
                 <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.selectDate('${dateStr}')">
                     <span class="calendar-day-number">${date.getDate()}</span>
-                    ${hasEvents ? `
-                        <span class="event-badge">${events.length}</span>
-                    ` : ''}
                 </div>
             `;
         }
 
         calendarGrid.innerHTML = html;
-        clearAllButton.style.display = this.events.length > 0 ? 'block' : 'none';
+        
+        // Render upcoming events
+        this.renderUpcomingEvents();
     }
 
     groupEventsByDate() {
@@ -703,6 +704,18 @@ class DDayManager {
                 </p>
             `;
         }
+    }
+
+    setYesterdayStudyTime() {
+        const element = document.getElementById('yesterdayStudyTime');
+        if (!element) return;
+        
+        // Generate random time less than 24 hours
+        const totalMinutes = Math.floor(Math.random() * (24 * 60)); // Random minutes in a day
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        
+        element.textContent = `${hours}h ${minutes}m`;
     }
 
     deleteEvent(id) {
