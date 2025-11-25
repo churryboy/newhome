@@ -477,7 +477,7 @@ body {
 .calendar-day::before {
     content: '';
     display: block;
-    padding-bottom: 100%;
+    padding-bottom: 71.34%;
 }
 
 .calendar-day-number {
