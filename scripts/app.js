@@ -76,6 +76,9 @@ class DDayManager {
         const fileInput = document.getElementById('fileInput');
         const saveButton = document.getElementById('saveButton');
         
+        // Camera Widget
+        const cameraButton = document.getElementById('cameraButton');
+        
         // Event Modal
         const closeEventModal = document.getElementById('closeEventModal');
         const eventModalOverlay = document.getElementById('eventModalOverlay');
@@ -86,6 +89,10 @@ class DDayManager {
         uploadButton.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         saveButton.addEventListener('click', () => this.saveEvent());
+        
+        if (cameraButton) {
+            cameraButton.addEventListener('click', () => this.openCameraWidget());
+        }
         
         if (closeEventModal) {
             closeEventModal.addEventListener('click', () => this.closeEventModal());
@@ -894,6 +901,37 @@ class DDayManager {
         // Clear data
         this.currentImageData = '';
         this.currentImageText = '';
+    }
+
+    openCameraWidget() {
+        // Create a file input for camera/image upload
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment'; // Use camera on mobile devices
+        
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const previewImage = document.getElementById('previewImage');
+                const previewPlaceholder = document.querySelector('.preview-placeholder');
+                
+                if (previewImage && previewPlaceholder) {
+                    previewImage.src = event.target.result;
+                    previewImage.style.display = 'block';
+                    previewPlaceholder.style.display = 'none';
+                    
+                    // Store the image data
+                    this.currentImageData = event.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        input.click();
     }
 }
 
