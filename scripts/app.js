@@ -176,8 +176,27 @@ class DDayManager {
     setupCameraPreview() {
         // Get all preview images
         this.previewImages = document.querySelectorAll('.preview-image');
-        
+        const cameraPreview = document.getElementById('cameraPreview');
         const paginationDots = document.querySelectorAll('.pagination-dot');
+        
+        // Add scroll listener to update pagination
+        if (cameraPreview) {
+            cameraPreview.addEventListener('scroll', () => {
+                const scrollLeft = cameraPreview.scrollLeft;
+                const containerWidth = cameraPreview.offsetWidth;
+                const currentIndex = Math.round(scrollLeft / containerWidth);
+                this.currentPreviewIndex = currentIndex;
+                
+                // Update pagination dots
+                paginationDots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            });
+        }
         
         paginationDots.forEach((dot, index) => {
             dot.addEventListener('click', () => this.goToPreviewImage(index));
@@ -192,28 +211,19 @@ class DDayManager {
 
     goToPreviewImage(index) {
         this.currentPreviewIndex = index;
-        this.updatePreviewDisplay();
+        const cameraPreview = document.getElementById('cameraPreview');
+        if (cameraPreview && this.previewImages[index]) {
+            const containerWidth = cameraPreview.offsetWidth;
+            cameraPreview.scrollTo({
+                left: containerWidth * index,
+                behavior: 'smooth'
+            });
+        }
     }
 
     updatePreviewDisplay() {
-        // Update active image
-        this.previewImages.forEach((img, index) => {
-            if (index === this.currentPreviewIndex) {
-                img.classList.add('active');
-            } else {
-                img.classList.remove('active');
-            }
-        });
-        
-        // Update pagination dots
-        const dots = document.querySelectorAll('.pagination-dot');
-        dots.forEach((dot, index) => {
-            if (index === this.currentPreviewIndex) {
-                dot.classList.add('active');
-            } else {
-                dot.classList.remove('active');
-            }
-        });
+        // This method is no longer needed with scroll-based pagination
+        // but keeping it for compatibility
     }
 
     changeMonth(delta) {
@@ -759,8 +769,8 @@ class DDayManager {
         const element = document.getElementById('yesterdayStudyTime');
         if (!element) return;
         
-        // Generate random time less than 24 hours
-        const totalMinutes = Math.floor(Math.random() * (24 * 60)); // Random minutes in a day
+        // Generate random time below 7 hours
+        const totalMinutes = Math.floor(Math.random() * (7 * 60)); // Random minutes below 7 hours
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
         
@@ -818,8 +828,8 @@ class DDayManager {
             });
             this.events.push({
                 id: 'placeholder-2',
-                title: '체육 실기 - 윗몸일으키기',
-                date: '2025-11-28',
+                title: '체육 - 윗몸일으키키',
+                date: '2025-11-26',
                 detail: '',
                 image: '',
                 createdAt: new Date().toISOString()

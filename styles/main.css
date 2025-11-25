@@ -1602,28 +1602,30 @@ body {
     border-radius: var(--radius-lg);
     background: var(--color-neutral-98);
     position: relative;
-    overflow: hidden;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     min-height: 160px;
 }
 
-.preview-slides {
-    display: flex;
-    transition: transform 0.3s ease;
-    height: 100%;
+.camera-preview::-webkit-scrollbar {
+    display: none;
 }
 
+
+.preview-slides {
+    display: flex;
+    height: 100%;
+}
 .preview-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     flex-shrink: 0;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    scroll-snap-align: start;
 }
 
-.preview-image.active {
-    opacity: 1;
-}
 
 .preview-pagination {
     display: flex;
@@ -1660,6 +1662,7 @@ body {
     font-weight: 600;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-sm);
 }
 
