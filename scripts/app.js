@@ -173,55 +173,43 @@ class DDayManager {
     }
 
     setupCameraPreview() {
-        // Get all preview images
-        this.previewImages = document.querySelectorAll('.preview-image');
-        
-        const prevBtn = document.getElementById('prevPreviewBtn');
-        const nextBtn = document.getElementById('nextPreviewBtn');
+        const previewContainer = document.getElementById('cameraPreview');
         const paginationDots = document.querySelectorAll('.pagination-dot');
+        const previewImages = document.querySelectorAll('.preview-image');
         
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.changePreviewImage(-1));
-        }
+        if (!previewContainer || previewImages.length === 0) return;
         
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.changePreviewImage(1));
-        }
+        // Handle scroll event to update pagination
+        let scrollTimeout;
+        previewContainer.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollLeft = previewContainer.scrollLeft;
+                const imageWidth = previewContainer.offsetWidth;
+                const currentIndex = Math.round(scrollLeft / imageWidth);
+                
+                // Update pagination dots
+                paginationDots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+                
+                this.currentPreviewIndex = currentIndex;
+            }, 100);
+        });
         
+        // Pagination dots click to scroll to image
         paginationDots.forEach((dot, index) => {
-            dot.addEventListener('click', () => this.goToPreviewImage(index));
-        });
-    }
-
-    changePreviewImage(direction) {
-        const totalImages = this.previewImages.length;
-        this.currentPreviewIndex = (this.currentPreviewIndex + direction + totalImages) % totalImages;
-        this.updatePreviewDisplay();
-    }
-
-    goToPreviewImage(index) {
-        this.currentPreviewIndex = index;
-        this.updatePreviewDisplay();
-    }
-
-    updatePreviewDisplay() {
-        // Update active image
-        this.previewImages.forEach((img, index) => {
-            if (index === this.currentPreviewIndex) {
-                img.classList.add('active');
-            } else {
-                img.classList.remove('active');
-            }
-        });
-        
-        // Update pagination dots
-        const dots = document.querySelectorAll('.pagination-dot');
-        dots.forEach((dot, index) => {
-            if (index === this.currentPreviewIndex) {
-                dot.classList.add('active');
-            } else {
-                dot.classList.remove('active');
-            }
+            dot.addEventListener('click', () => {
+                const imageWidth = previewContainer.offsetWidth;
+                previewContainer.scrollTo({
+                    left: imageWidth * index,
+                    behavior: 'smooth'
+                });
+            });
         });
     }
 
