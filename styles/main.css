@@ -1556,7 +1556,7 @@ body {
 }
 
 .widget-title {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     color: #6B7684;
     margin-bottom: var(--space-xs);
