@@ -10,7 +10,7 @@ class DDayManager {
         this.currentImageData = ''; // Store current uploaded image
         this.currentTab = 'home';
         this.currentDate = new Date();
-        this.isCalendarCollapsed = false;
+        this.isCalendarCollapsed = true;
         this.selectedDate = null;
         // Use relative URL for API calls (works both locally and on Vercel)
         this.apiUrl = window.location.hostname === 'localhost' 
@@ -750,6 +750,19 @@ class DDayManager {
                 console.error('이벤트 불러오기 실패:', e);
                 this.events = [];
             }
+        }
+        
+        // Add placeholder event if no events exist
+        if (this.events.length === 0) {
+            this.events.push({
+                id: 'placeholder-1',
+                title: '지구과학 수행 제출',
+                date: '2025-11-26',
+                detail: '',
+                image: '',
+                createdAt: new Date().toISOString()
+            });
+            this.saveEvents();
         }
     }
 
