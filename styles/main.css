@@ -558,32 +558,19 @@ body {
     color: var(--color-neutral-60);
 }
 
-.calendar-events {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.calendar-event-dot {
-    width: 100%;
-    height: 4px;
-    border-radius: 2px;
+.event-badge {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
     background: var(--color-primary-50);
-}
-
-.calendar-event-dot.today-event {
-    background: var(--color-success);
-}
-
-.calendar-event-dot.passed-event {
-    background: var(--color-neutral-60);
-}
-
-.event-count {
+    color: var(--color-neutral-100);
     font-size: 10px;
-    color: var(--color-neutral-50);
-    margin-top: var(--space-xxxs);
+    font-weight: 700;
+    line-height: 1;
+    padding: 3px 5px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
 }
 
 /* Selected Date Events Panel */

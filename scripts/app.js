@@ -442,16 +442,7 @@ class DDayManager {
                 <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.showDateEvents('${dateStr}')">
                     <span class="calendar-day-number">${day}</span>
                     ${hasEvents ? `
-                        <div class="calendar-events">
-                            ${events.slice(0, 3).map(event => {
-                                const dday = this.calculateDDay(event.date);
-                                let dotClass = 'calendar-event-dot';
-                                if (dday === 0) dotClass += ' today-event';
-                                else if (dday < 0) dotClass += ' passed-event';
-                                return `<div class="${dotClass}"></div>`;
-                            }).join('')}
-                            ${events.length > 3 ? `<span class="event-count">+${events.length - 3}</span>` : ''}
-                        </div>
+                        <span class="event-badge">${events.length}</span>
                     ` : ''}
                 </div>
             `;
@@ -515,16 +506,7 @@ class DDayManager {
                 <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.showDateEvents('${dateStr}')">
                     <span class="calendar-day-number">${date.getDate()}</span>
                     ${hasEvents ? `
-                        <div class="calendar-events">
-                            ${events.slice(0, 3).map(event => {
-                                const dday = this.calculateDDay(event.date);
-                                let dotClass = 'calendar-event-dot';
-                                if (dday === 0) dotClass += ' today-event';
-                                else if (dday < 0) dotClass += ' passed-event';
-                                return `<div class="${dotClass}"></div>`;
-                            }).join('')}
-                            ${events.length > 3 ? `<span class="event-count">+${events.length - 3}</span>` : ''}
-                        </div>
+                        <span class="event-badge">${events.length}</span>
                     ` : ''}
                 </div>
             `;
