@@ -116,14 +116,15 @@ class DDayManager {
     }
 
     setupTabNavigation() {
-        const navItems = document.querySelectorAll('.nav-item');
-        
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const tab = item.getAttribute('data-tab');
-                this.switchTab(tab);
-            });
-        });
+        // Tab navigation disabled - tabs are currently unresponsive
+        // const navItems = document.querySelectorAll('.nav-item');
+        // 
+        // navItems.forEach(item => {
+        //     item.addEventListener('click', () => {
+        //         const tab = item.getAttribute('data-tab');
+        //         this.switchTab(tab);
+        //     });
+        // });
     }
 
     setupCalendarNavigation() {
