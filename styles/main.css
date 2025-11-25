@@ -88,7 +88,7 @@ html, body {
     --status-bar-height: 44px;
     --profile-tab-height: 60px;
     --top-bars-height: 104px; /* status-bar + profile-tab */
-    --bottom-nav-height: 64px;
+    --bottom-nav-height: 50px;
 }
 
 /* ============================================
@@ -894,36 +894,50 @@ body {
 }
 
 /* ============================================
+   Placeholder Container
+   ============================================ */
+
+.placeholder-container {
+    padding: var(--space-xl);
+    text-align: center;
+}
+
+.placeholder-container h2 {
+    margin-bottom: var(--space-base);
+}
+
+/* ============================================
    Bottom Navigation
    ============================================ */
 
 .bottom-nav {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
-    height: var(--bottom-nav-height);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    width: 360px;
+    height: 50px;
+    align-items: flex-start;
+    flex-shrink: 0;
     background: var(--color-neutral-100);
     border-top: 1px solid var(--color-neutral-90);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: var(--space-xs) 0;
     z-index: 100;
 }
 
 .nav-item {
-    flex: 1;
     display: flex;
+    height: 50px;
+    padding: 4px 0;
     flex-direction: column;
+    justify-content: flex-end;
     align-items: center;
-    justify-content: center;
-    gap: var(--space-xxs);
+    gap: 4px;
+    flex: 1 0 0;
     background: none;
     border: none;
     color: var(--color-neutral-50);
     cursor: pointer;
-    padding: var(--space-xs);
     transition: all 0.2s ease;
     border-radius: var(--radius-sm);
 }
