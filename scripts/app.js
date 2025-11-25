@@ -176,17 +176,7 @@ class DDayManager {
         // Get all preview images
         this.previewImages = document.querySelectorAll('.preview-image');
         
-        const prevBtn = document.getElementById('prevPreviewBtn');
-        const nextBtn = document.getElementById('nextPreviewBtn');
         const paginationDots = document.querySelectorAll('.pagination-dot');
-        
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.changePreviewImage(-1));
-        }
-        
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.changePreviewImage(1));
-        }
         
         paginationDots.forEach((dot, index) => {
             dot.addEventListener('click', () => this.goToPreviewImage(index));
