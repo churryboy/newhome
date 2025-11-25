@@ -760,7 +760,7 @@ body {
 
 .friend-item {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: var(--space-xs);
     background: var(--color-neutral-95);
