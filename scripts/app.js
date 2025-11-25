@@ -10,8 +10,10 @@ class DDayManager {
         this.currentImageData = ''; // Store current uploaded image
         this.currentTab = 'home';
         this.currentDate = new Date();
-        this.isCalendarCollapsed = true;
+        this.isCalendarCollapsed = false;
         this.selectedDate = null;
+        this.currentPreviewIndex = 0;
+        this.previewImages = [];
         // Use relative URL for API calls (works both locally and on Vercel)
         this.apiUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000/api' 
@@ -25,6 +27,7 @@ class DDayManager {
         this.setupEventListeners();
         this.setupTabNavigation();
         this.setupCalendarNavigation();
+        this.setupCameraPreview();
         this.setupKeyboardShortcuts();
         this.updateStatusBar();
         this.renderCalendar();
@@ -76,6 +79,9 @@ class DDayManager {
         const fileInput = document.getElementById('fileInput');
         const saveButton = document.getElementById('saveButton');
         
+        // Camera Widget
+        const cameraButton = document.getElementById('cameraButton');
+        
         // Event Modal
         const closeEventModal = document.getElementById('closeEventModal');
         const eventModalOverlay = document.getElementById('eventModalOverlay');
@@ -86,6 +92,10 @@ class DDayManager {
         uploadButton.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         saveButton.addEventListener('click', () => this.saveEvent());
+        
+        if (cameraButton) {
+            cameraButton.addEventListener('click', () => this.openCameraWidget());
+        }
         
         if (closeEventModal) {
             closeEventModal.addEventListener('click', () => this.closeEventModal());
@@ -116,15 +126,14 @@ class DDayManager {
     }
 
     setupTabNavigation() {
-        // Tab navigation disabled - tabs are currently unresponsive
-        // const navItems = document.querySelectorAll('.nav-item');
-        // 
-        // navItems.forEach(item => {
-        //     item.addEventListener('click', () => {
-        //         const tab = item.getAttribute('data-tab');
-        //         this.switchTab(tab);
-        //     });
-        // });
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tab = item.getAttribute('data-tab');
+                this.switchTab(tab);
+            });
+        });
     }
 
     setupCalendarNavigation() {
@@ -161,6 +170,49 @@ class DDayManager {
         
         // Save preference
         localStorage.setItem('calendarCollapsed', this.isCalendarCollapsed);
+    }
+
+    setupCameraPreview() {
+        // Get all preview images
+        this.previewImages = document.querySelectorAll('.preview-image');
+        
+        const paginationDots = document.querySelectorAll('.pagination-dot');
+        
+        paginationDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToPreviewImage(index));
+        });
+    }
+
+    changePreviewImage(direction) {
+        const totalImages = this.previewImages.length;
+        this.currentPreviewIndex = (this.currentPreviewIndex + direction + totalImages) % totalImages;
+        this.updatePreviewDisplay();
+    }
+
+    goToPreviewImage(index) {
+        this.currentPreviewIndex = index;
+        this.updatePreviewDisplay();
+    }
+
+    updatePreviewDisplay() {
+        // Update active image
+        this.previewImages.forEach((img, index) => {
+            if (index === this.currentPreviewIndex) {
+                img.classList.add('active');
+            } else {
+                img.classList.remove('active');
+            }
+        });
+        
+        // Update pagination dots
+        const dots = document.querySelectorAll('.pagination-dot');
+        dots.forEach((dot, index) => {
+            if (index === this.currentPreviewIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
     }
 
     changeMonth(delta) {
@@ -753,12 +805,20 @@ class DDayManager {
             }
         }
         
-        // Add placeholder event if no events exist
+        // Add placeholder events if no events exist
         if (this.events.length === 0) {
             this.events.push({
                 id: 'placeholder-1',
                 title: '지구과학 수행 제출',
                 date: '2025-11-26',
+                detail: '',
+                image: '',
+                createdAt: new Date().toISOString()
+            });
+            this.events.push({
+                id: 'placeholder-2',
+                title: '체육 실기 - 윗몸일으키기',
+                date: '2025-11-28',
                 detail: '',
                 image: '',
                 createdAt: new Date().toISOString()
@@ -908,6 +968,33 @@ class DDayManager {
         // Clear data
         this.currentImageData = '';
         this.currentImageText = '';
+    }
+
+    openCameraWidget() {
+        // Create a file input for camera/image upload
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment'; // Use camera on mobile devices
+        
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                // Update the current active preview image with the captured image
+                const activeImage = document.querySelector('.preview-image.active');
+                if (activeImage) {
+                    activeImage.src = event.target.result;
+                    // Store the image data
+                    this.currentImageData = event.target.result;
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        input.click();
     }
 }
 

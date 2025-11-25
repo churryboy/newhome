@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#ED5000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>콴다</title>
+    <title>디데이 관리</title>
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -69,7 +69,7 @@
         <!-- Tab 1: 홈 (Home - Calendar) -->
         <div class="tab-content active" id="homeTab">
             <!-- Calendar View -->
-            <div class="calendar-view collapsed" id="calendarView">
+            <div class="calendar-view" id="calendarView">
                 <div class="calendar-widget-layout">
                     <!-- Left Column: Monthly Calendar -->
                     <div class="calendar-month-section">
@@ -111,32 +111,23 @@
 
             <!-- Widget Cards -->
             <div class="widget-cards">
-                <div class="widget-card-large">
-                    <div class="widget-illustration">
-                        <!-- Creative pencil and paper illustration -->
-                        <svg class="illustration-svg" width="80" height="80" viewBox="0 0 100 100" fill="none">
-                            <!-- Paper background -->
-                            <rect x="20" y="15" width="50" height="65" rx="4" fill="#FFFFFF" stroke="#E0E0E0" stroke-width="2"/>
-                            <!-- Paper lines -->
-                            <line x1="28" y1="28" x2="62" y2="28" stroke="#F0F0F0" stroke-width="1.5"/>
-                            <line x1="28" y1="36" x2="62" y2="36" stroke="#F0F0F0" stroke-width="1.5"/>
-                            <line x1="28" y1="44" x2="58" y2="44" stroke="#F0F0F0" stroke-width="1.5"/>
-                            <line x1="28" y1="52" x2="62" y2="52" stroke="#F0F0F0" stroke-width="1.5"/>
-                            <!-- Check mark -->
-                            <path d="M 32 60 L 38 66 L 52 50" stroke="#ED5000" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-                            <!-- Pencil -->
-                            <g transform="translate(60, 20) rotate(45)">
-                                <rect x="0" y="0" width="6" height="35" rx="1" fill="#FFD700"/>
-                                <polygon points="0,35 6,35 3,42" fill="#FFA500"/>
-                                <rect x="0" y="0" width="6" height="8" fill="#FF6B6B"/>
-                            </g>
-                            <!-- Sparkle effects -->
-                            <circle cx="75" cy="25" r="2" fill="#ED5000" opacity="0.6"/>
-                            <circle cx="25" cy="70" r="1.5" fill="#ED5000" opacity="0.4"/>
-                            <path d="M 82 35 L 83 37 L 85 36 L 84 38 L 86 39 L 84 40 L 85 42 L 83 41 L 82 43 L 81 41 L 79 42 L 80 40 L 78 39 L 80 38 L 79 36 L 81 37 Z" fill="#FFD700" opacity="0.5"/>
-                        </svg>
+                <div class="widget-card-large camera-widget">
+                    <div class="camera-preview-container">
+                        <div class="camera-preview" id="cameraPreview">
+                            <div class="preview-slides">
+                                <img src="image/sample1.png" class="preview-image active" alt="Sample 1">
+                                <img src="image/sample2.png" class="preview-image" alt="Sample 2">
+                            </div>
+                        </div>
                     </div>
-                    <span class="widget-label type-subheadline">문제풀이</span>
+                    <div class="preview-pagination" id="previewPagination">
+                        <span class="pagination-dot active"></span>
+                        <span class="pagination-dot"></span>
+                    </div>
+                    <button class="camera-button" id="cameraButton">
+                        <img src="image/camera-icon.png" alt="Camera" class="camera-icon">
+                        <span class="type-subheadline">풀이검색</span>
+                    </button>
                 </div>
                 <div class="widget-cards-right">
                     <div class="widget-card-small widget-card-study-time">
