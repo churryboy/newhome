@@ -464,7 +464,7 @@ body {
 }
 
 .weekday:last-child {
-    color: var(--color-primary-50);
+    color: #3D4FDB;
 }
 
 .calendar-grid {
@@ -536,7 +536,7 @@ body {
 }
 
 .calendar-day.saturday .calendar-day-number {
-    color: var(--color-primary-50);
+    color: #3D4FDB;
 }
 
 .calendar-day.other-month .calendar-day-number {
