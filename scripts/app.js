@@ -417,7 +417,7 @@ class DDayManager {
         // Update title
         const year = this.currentDate.getFullYear();
         const month = this.currentDate.getMonth();
-        calendarTitle.textContent = `${year}년 ${month + 1}월`;
+        calendarTitle.textContent = `${month + 1}월`;
 
         // Get first and last day of month
         const firstDay = new Date(year, month, 1);
@@ -463,11 +463,8 @@ class DDayManager {
             if (hasEvents) dayClass += ' has-events';
 
             html += `
-                <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.selectDate('${dateStr}')">
+                <div class="${dayClass}" data-date="${dateStr}" onclick="window.ddayManager.selectDate('${dateStr}')">
                     <span class="calendar-day-number">${day}</span>
-                    ${hasEvents ? `
-                        <span class="event-badge">${events.length}</span>
-                    ` : ''}
                 </div>
             `;
             dayCount++;
@@ -483,6 +480,53 @@ class DDayManager {
 
         calendarGrid.innerHTML = html;
         clearAllButton.style.display = this.events.length > 0 ? 'block' : 'none';
+        
+        // Render upcoming events
+        this.renderUpcomingEvents();
+    }
+
+    renderUpcomingEvents() {
+        const upcomingEventsList = document.getElementById('upcomingEventsList');
+        if (!upcomingEventsList) return;
+        
+        // Get upcoming events (max 2)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const upcomingEvents = this.events
+            .filter(e => new Date(e.date) >= today)
+            .sort((a, b) => new Date(a.date) - new Date(b.date))
+            .slice(0, 2);
+        
+        if (upcomingEvents.length === 0) {
+            upcomingEventsList.innerHTML = `
+                <div style="color: var(--color-neutral-50); font-size: 12px; text-align: center; padding: var(--space-lg) 0;">
+                    예정된 이벤트가 없습니다
+                </div>
+            `;
+            return;
+        }
+        
+        const colors = ['color-purple', 'color-yellow', 'color-blue'];
+        
+        const html = upcomingEvents.map((event, index) => {
+            const eventDate = new Date(event.date);
+            const dateStr = eventDate.toLocaleDateString('ko-KR', {
+                month: 'long',
+                day: 'numeric'
+            });
+            const timeStr = event.detail || '';
+            const colorClass = colors[index % colors.length];
+            
+            return `
+                <div class="upcoming-event-card ${colorClass}">
+                    <div class="upcoming-event-title">${event.title}</div>
+                    <div class="upcoming-event-time">${dateStr}${timeStr ? ' • ' + timeStr : ''}</div>
+                </div>
+            `;
+        }).join('');
+        
+        upcomingEventsList.innerHTML = html;
     }
 
     renderWeekView() {
@@ -502,7 +546,7 @@ class DDayManager {
         // Update title to show only month
         const year = this.currentDate.getFullYear();
         const month = this.currentDate.getMonth();
-        calendarTitle.textContent = `${year}년 ${month + 1}월`;
+        calendarTitle.textContent = `${month + 1}월`;
 
         // Get events grouped by date
         const eventsByDate = this.groupEventsByDate();
