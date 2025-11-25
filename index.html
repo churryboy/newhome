@@ -254,6 +254,54 @@
         </div>
     </div>
 
+    <!-- Event Creation Modal -->
+    <div class="event-modal" id="eventModal" style="display: none;">
+        <div class="event-modal-overlay" id="eventModalOverlay"></div>
+        <div class="event-modal-content">
+            <div class="event-modal-header">
+                <h3 class="type-headline-strong">이벤트 추가</h3>
+                <button class="modal-close-btn" id="closeEventModal" aria-label="닫기">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="event-modal-body">
+                <!-- Image Upload Option -->
+                <div class="modal-upload-section">
+                    <input type="file" id="modalFileInput" accept="image/*" style="display: none;">
+                    <button class="modal-upload-btn" id="modalUploadButton">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                            <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                        <span class="type-subheadline">이미지 업로드</span>
+                    </button>
+                </div>
+
+                <!-- Text Input Fields -->
+                <div class="modal-input-form">
+                    <div class="modal-form-group">
+                        <label for="modalTitleInput" class="type-subheadline">제목</label>
+                        <input type="text" id="modalTitleInput" placeholder="이벤트 제목을 입력하세요" class="type-body">
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="modalDateInput" class="type-subheadline">날짜</label>
+                        <input type="date" id="modalDateInput" class="type-body">
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="modalDetailInput" class="type-subheadline">세부사항</label>
+                        <textarea id="modalDetailInput" placeholder="세부사항을 입력하세요 (선택사항)" class="type-body" rows="4"></textarea>
+                    </div>
+                    <button class="btn-primary" id="modalSaveButton">
+                        <span class="type-subheadline">저장하기</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <nav class="bottom-nav">
         <button class="nav-item active" data-tab="home">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

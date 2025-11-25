@@ -11,6 +11,7 @@ class DDayManager {
         this.currentTab = 'home';
         this.currentDate = new Date();
         this.isCalendarCollapsed = false;
+        this.selectedDate = null;
         this.apiUrl = 'http://localhost:3000/api';
         this.init();
     }
@@ -71,11 +72,34 @@ class DDayManager {
         const fileInput = document.getElementById('fileInput');
         const saveButton = document.getElementById('saveButton');
         const clearAllButton = document.getElementById('clearAllButton');
+        
+        // Event Modal
+        const closeEventModal = document.getElementById('closeEventModal');
+        const eventModalOverlay = document.getElementById('eventModalOverlay');
+        const modalUploadButton = document.getElementById('modalUploadButton');
+        const modalFileInput = document.getElementById('modalFileInput');
+        const modalSaveButton = document.getElementById('modalSaveButton');
 
         uploadButton.addEventListener('click', () => fileInput.click());
         fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
         saveButton.addEventListener('click', () => this.saveEvent());
         clearAllButton.addEventListener('click', () => this.clearAllEvents());
+        
+        if (closeEventModal) {
+            closeEventModal.addEventListener('click', () => this.closeEventModal());
+        }
+        if (eventModalOverlay) {
+            eventModalOverlay.addEventListener('click', () => this.closeEventModal());
+        }
+        if (modalUploadButton) {
+            modalUploadButton.addEventListener('click', () => modalFileInput.click());
+        }
+        if (modalFileInput) {
+            modalFileInput.addEventListener('change', (e) => this.handleModalFileUpload(e));
+        }
+        if (modalSaveButton) {
+            modalSaveButton.addEventListener('click', () => this.saveEventFromModal());
+        }
     }
 
     async checkServerConnection() {
@@ -439,7 +463,7 @@ class DDayManager {
             if (hasEvents) dayClass += ' has-events';
 
             html += `
-                <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.showDateEvents('${dateStr}')">
+                <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.selectDate('${dateStr}')">
                     <span class="calendar-day-number">${day}</span>
                     ${hasEvents ? `
                         <span class="event-badge">${events.length}</span>
@@ -503,7 +527,7 @@ class DDayManager {
             if (hasEvents) dayClass += ' has-events';
 
             html += `
-                <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.showDateEvents('${dateStr}')">
+                <div class="${dayClass}" data-date="${dateStr}" onclick="ddayManager.selectDate('${dateStr}')">
                     <span class="calendar-day-number">${date.getDate()}</span>
                     ${hasEvents ? `
                         <span class="event-badge">${events.length}</span>
@@ -714,6 +738,110 @@ class DDayManager {
             toast.style.animation = 'slideDownToast 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
             setTimeout(() => toast.remove(), 300);
         }, 2500);
+    }
+
+    selectDate(dateStr) {
+        // Remove previous selection
+        document.querySelectorAll('.calendar-day.selected').forEach(day => {
+            day.classList.remove('selected');
+        });
+        
+        // Add selection to clicked date
+        const clickedDay = document.querySelector(`[data-date="${dateStr}"]`);
+        if (clickedDay) {
+            clickedDay.classList.add('selected');
+        }
+        
+        this.selectedDate = dateStr;
+        this.openEventModal(dateStr);
+    }
+
+    openEventModal(dateStr) {
+        const modal = document.getElementById('eventModal');
+        const modalDateInput = document.getElementById('modalDateInput');
+        const modalTitleInput = document.getElementById('modalTitleInput');
+        const modalDetailInput = document.getElementById('modalDetailInput');
+        
+        if (modal) {
+            modal.style.display = 'flex';
+            
+            // Pre-fill the date
+            if (modalDateInput) {
+                modalDateInput.value = dateStr;
+            }
+            
+            // Clear other fields
+            if (modalTitleInput) modalTitleInput.value = '';
+            if (modalDetailInput) modalDetailInput.value = '';
+            this.currentImageData = '';
+            this.currentImageText = '';
+        }
+    }
+
+    closeEventModal() {
+        const modal = document.getElementById('eventModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+        
+        // Clear selection
+        document.querySelectorAll('.calendar-day.selected').forEach(day => {
+            day.classList.remove('selected');
+        });
+        this.selectedDate = null;
+    }
+
+    async handleModalFileUpload(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            this.currentImageData = event.target.result;
+            await this.performOCR(event.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    saveEventFromModal() {
+        const titleInput = document.getElementById('modalTitleInput');
+        const dateInput = document.getElementById('modalDateInput');
+        const detailInput = document.getElementById('modalDetailInput');
+        
+        const title = titleInput.value.trim();
+        const date = dateInput.value;
+        const detail = detailInput.value.trim();
+        
+        if (!title) {
+            this.showToast('제목을 입력하세요');
+            return;
+        }
+        
+        if (!date) {
+            this.showToast('날짜를 선택하세요');
+            return;
+        }
+        
+        const event = {
+            id: Date.now(),
+            title,
+            date,
+            detail: detail || '',
+            imageData: this.currentImageData || '',
+            createdAt: new Date().toISOString()
+        };
+        
+        this.events.push(event);
+        this.saveEvents();
+        this.renderCalendar();
+        this.updateStats();
+        this.closeEventModal();
+        
+        this.showToast('이벤트가 추가되었습니다! 🎉');
+        
+        // Clear data
+        this.currentImageData = '';
+        this.currentImageText = '';
     }
 }
 
