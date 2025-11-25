@@ -1644,21 +1644,30 @@ body {
     background: var(--color-primary-50);
 }
 
+
 .camera-button {
     width: 100%;
     padding: var(--space-sm) var(--space-base);
-    background: var(--color-neutral-100);
-    border: 2px solid var(--color-neutral-80);
+    background: #3D3D3D;
+    border: none;
     border-radius: var(--radius-lg);
     cursor: pointer;
     transition: all 0.2s ease;
-    color: var(--color-neutral-20);
+    color: #FFFFFF;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.camera-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
 }
 
 .camera-button:hover {
-    background: var(--color-neutral-95);
-    border-color: var(--color-neutral-70);
+    background: #4A4A4A;
 }
 
 .camera-button:active {
