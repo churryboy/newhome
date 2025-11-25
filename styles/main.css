@@ -560,7 +560,6 @@ body {
     background: var(--color-neutral-95);
     border-radius: var(--radius-base);
     padding: var(--space-sm) var(--space-base);
-    border-left: 4px solid;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -570,17 +569,14 @@ body {
 }
 
 .upcoming-event-card.color-purple {
-    border-left-color: #A78BFA;
     background: #F5F3FF;
 }
 
 .upcoming-event-card.color-yellow {
-    border-left-color: #FBBF24;
     background: #FFFBEB;
 }
 
 .upcoming-event-card.color-blue {
-    border-left-color: var(--color-primary-50);
     background: var(--color-primary-100);
 }
 
