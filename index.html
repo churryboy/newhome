@@ -112,9 +112,27 @@
             <!-- Widget Cards -->
             <div class="widget-cards">
                 <div class="widget-card-large camera-widget">
-                    <div class="camera-preview" id="cameraPreview">
-                        <span class="preview-placeholder type-body">Previous image</span>
-                        <img id="previewImage" class="preview-image" style="display: none;" alt="Preview">
+                    <div class="camera-preview-container">
+                        <button class="preview-nav prev-btn" id="prevPreviewBtn" aria-label="이전">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
+                        <div class="camera-preview" id="cameraPreview">
+                            <div class="preview-slides">
+                                <img src="image/sample1.png" class="preview-image active" alt="Sample 1">
+                                <img src="image/sample2.png" class="preview-image" alt="Sample 2">
+                            </div>
+                        </div>
+                        <button class="preview-nav next-btn" id="nextPreviewBtn" aria-label="다음">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="preview-pagination" id="previewPagination">
+                        <span class="pagination-dot active"></span>
+                        <span class="pagination-dot"></span>
                     </div>
                     <button class="camera-button" id="cameraButton">
                         <span class="type-subheadline">Camera button</span>

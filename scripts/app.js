@@ -12,6 +12,8 @@ class DDayManager {
         this.currentDate = new Date();
         this.isCalendarCollapsed = false;
         this.selectedDate = null;
+        this.currentPreviewIndex = 0;
+        this.previewImages = [];
         // Use relative URL for API calls (works both locally and on Vercel)
         this.apiUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000/api' 
@@ -25,6 +27,7 @@ class DDayManager {
         this.setupEventListeners();
         this.setupTabNavigation();
         this.setupCalendarNavigation();
+        this.setupCameraPreview();
         this.setupKeyboardShortcuts();
         this.updateStatusBar();
         this.renderCalendar();
@@ -167,6 +170,59 @@ class DDayManager {
         
         // Save preference
         localStorage.setItem('calendarCollapsed', this.isCalendarCollapsed);
+    }
+
+    setupCameraPreview() {
+        // Get all preview images
+        this.previewImages = document.querySelectorAll('.preview-image');
+        
+        const prevBtn = document.getElementById('prevPreviewBtn');
+        const nextBtn = document.getElementById('nextPreviewBtn');
+        const paginationDots = document.querySelectorAll('.pagination-dot');
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => this.changePreviewImage(-1));
+        }
+        
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => this.changePreviewImage(1));
+        }
+        
+        paginationDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => this.goToPreviewImage(index));
+        });
+    }
+
+    changePreviewImage(direction) {
+        const totalImages = this.previewImages.length;
+        this.currentPreviewIndex = (this.currentPreviewIndex + direction + totalImages) % totalImages;
+        this.updatePreviewDisplay();
+    }
+
+    goToPreviewImage(index) {
+        this.currentPreviewIndex = index;
+        this.updatePreviewDisplay();
+    }
+
+    updatePreviewDisplay() {
+        // Update active image
+        this.previewImages.forEach((img, index) => {
+            if (index === this.currentPreviewIndex) {
+                img.classList.add('active');
+            } else {
+                img.classList.remove('active');
+            }
+        });
+        
+        // Update pagination dots
+        const dots = document.querySelectorAll('.pagination-dot');
+        dots.forEach((dot, index) => {
+            if (index === this.currentPreviewIndex) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
     }
 
     changeMonth(delta) {
@@ -937,14 +993,10 @@ class DDayManager {
             
             const reader = new FileReader();
             reader.onload = (event) => {
-                const previewImage = document.getElementById('previewImage');
-                const previewPlaceholder = document.querySelector('.preview-placeholder');
-                
-                if (previewImage && previewPlaceholder) {
-                    previewImage.src = event.target.result;
-                    previewImage.style.display = 'block';
-                    previewPlaceholder.style.display = 'none';
-                    
+                // Update the current active preview image with the captured image
+                const activeImage = document.querySelector('.preview-image.active');
+                if (activeImage) {
+                    activeImage.src = event.target.result;
                     // Store the image data
                     this.currentImageData = event.target.result;
                 }
