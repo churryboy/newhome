@@ -460,8 +460,8 @@ body {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: var(--space-xxs);
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 2px;
     width: 100%;
     box-sizing: border-box;
 }
