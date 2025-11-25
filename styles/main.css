@@ -88,7 +88,7 @@ html, body {
     --status-bar-height: 44px;
     --profile-tab-height: 60px;
     --top-bars-height: 104px; /* status-bar + profile-tab */
-    --bottom-nav-height: 50px;
+    --bottom-nav-height: 80px; /* nav 50px + spacer 30px */
 }
 
 /* ============================================
@@ -912,7 +912,7 @@ body {
 
 .bottom-nav {
     position: fixed;
-    bottom: 0;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -920,9 +920,18 @@ body {
     height: 50px;
     align-items: flex-start;
     flex-shrink: 0;
-    background: var(--color-neutral-100);
-    border-top: 1px solid var(--color-neutral-90);
+    background: transparent;
     z-index: 100;
+}
+
+.bottom-spacer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: transparent;
+    z-index: 99;
 }
 
 .nav-item {
