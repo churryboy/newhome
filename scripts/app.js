@@ -405,11 +405,6 @@ class DDayManager {
     }
 
     renderCalendar() {
-        if (this.isCalendarCollapsed) {
-            this.renderWeekView();
-            return;
-        }
-
         const calendarTitle = document.getElementById('calendarTitle');
         const calendarGrid = document.getElementById('calendarGrid');
         const clearAllButton = document.getElementById('clearAllButton');

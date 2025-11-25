@@ -486,29 +486,9 @@ body {
     opacity: 0.3;
 }
 
-.calendar-day.today {
-    background: var(--color-primary-50);
-    border-radius: 50%;
-}
-
 .calendar-day.today .calendar-day-number {
-    color: var(--color-neutral-100);
-}
-
-.calendar-day.has-events::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--color-primary-50);
-}
-
-.calendar-day.today.has-events::after {
-    background: var(--color-neutral-100);
+    color: var(--color-primary-50);
+    font-weight: 700;
 }
 
 .calendar-day.selected {
