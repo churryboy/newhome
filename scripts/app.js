@@ -12,7 +12,10 @@ class DDayManager {
         this.currentDate = new Date();
         this.isCalendarCollapsed = false;
         this.selectedDate = null;
-        this.apiUrl = 'http://localhost:3000/api';
+        // Use relative URL for API calls (works both locally and on Vercel)
+        this.apiUrl = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api' 
+            : '/api';
         this.init();
     }
 
