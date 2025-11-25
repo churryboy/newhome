@@ -758,6 +758,27 @@ class DDayManager {
                 this.events = [];
             }
         }
+        
+        // Add placeholder events if no events exist
+        if (this.events.length === 0) {
+            this.events.push({
+                id: 'placeholder-1',
+                title: '지구과학 수행 제출',
+                date: '2025-11-26',
+                detail: '',
+                image: '',
+                createdAt: new Date().toISOString()
+            });
+            this.events.push({
+                id: 'placeholder-2',
+                title: '체육 실기 - 윗몸일으키기',
+                date: '2025-11-28',
+                detail: '',
+                image: '',
+                createdAt: new Date().toISOString()
+            });
+            this.saveEvents();
+        }
     }
 
     escapeHtml(text) {
