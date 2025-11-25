@@ -616,12 +616,17 @@ class DDayManager {
         const upcoming = this.events.filter(e => this.calculateDDay(e.date) > 0).length;
         const passed = this.events.filter(e => this.calculateDDay(e.date) < 0).length;
 
-        document.getElementById('totalEvents').textContent = total;
-        document.getElementById('upcomingEvents').textContent = upcoming;
-        document.getElementById('passedEvents').textContent = passed;
+        const totalEl = document.getElementById('totalEvents');
+        const upcomingEl = document.getElementById('upcomingEvents');
+        const passedEl = document.getElementById('passedEvents');
+        
+        if (totalEl) totalEl.textContent = total;
+        if (upcomingEl) upcomingEl.textContent = upcoming;
+        if (passedEl) passedEl.textContent = passed;
 
         // Show next upcoming event
         const nextEventCard = document.getElementById('nextEventCard');
+        if (!nextEventCard) return;
         const upcomingEvents = this.events
             .filter(e => this.calculateDDay(e.date) >= 0)
             .sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -872,7 +877,7 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialize
-let ddayManager;
+window.ddayManager = null;
 document.addEventListener('DOMContentLoaded', () => {
-    ddayManager = new DDayManager();
+    window.ddayManager = new DDayManager();
 });
