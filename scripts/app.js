@@ -127,19 +127,11 @@ class DDayManager {
     }
 
     setupCalendarNavigation() {
-        const prevBtn = document.getElementById('prevMonthBtn');
-        const nextBtn = document.getElementById('nextMonthBtn');
         const collapseBtn = document.getElementById('collapseBtn');
         const closeSelectedDate = document.getElementById('closeSelectedDate');
         const closeImageModal = document.getElementById('closeImageModal');
         const imageModalOverlay = document.getElementById('imageModalOverlay');
 
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => this.changeMonth(-1));
-        }
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => this.changeMonth(1));
-        }
         if (collapseBtn) {
             collapseBtn.addEventListener('click', () => this.toggleCalendarCollapse());
         }
@@ -935,4 +927,17 @@ document.head.appendChild(style);
 window.ddayManager = null;
 document.addEventListener('DOMContentLoaded', () => {
     window.ddayManager = new DDayManager();
+    
+    // Splash screen handling
+    const splashScreen = document.getElementById('splashScreen');
+    if (splashScreen) {
+        // Wait for logo animation to complete, then fade out
+        setTimeout(() => {
+            splashScreen.classList.add('fade-out');
+            // Remove from DOM after fade animation
+            setTimeout(() => {
+                splashScreen.style.display = 'none';
+            }, 500);
+        }, 1500); // Show splash for 1.5 seconds
+    }
 });

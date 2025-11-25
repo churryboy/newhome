@@ -182,7 +182,7 @@ body {
     background: transparent;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 0 var(--space-base);
     color: var(--color-neutral-10);
     width: 100%;
@@ -229,7 +229,7 @@ body {
     background: transparent;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 0 var(--space-base);
     width: 100%;
 }
@@ -398,7 +398,7 @@ body {
 .calendar-header {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     margin-bottom: var(--space-base);
 }
 
@@ -601,7 +601,7 @@ body {
 
 .selected-date-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: var(--space-base);
 }
@@ -616,7 +616,7 @@ body {
     border-radius: var(--radius-sm);
     padding: var(--space-sm);
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     transition: all 0.2s ease;
 }
@@ -710,6 +710,14 @@ body {
     transform: scale(0.98);
 }
 
+.widget-card-study-time {
+    flex: 0.6;
+}
+
+.widget-card-friends {
+    flex: 1.4;
+}
+
 .widget-small-content {
     padding: var(--space-base);
     display: flex;
@@ -756,7 +764,7 @@ body {
 
 .friend-item {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     padding: var(--space-xs);
     background: var(--color-neutral-95);
@@ -1331,7 +1339,7 @@ body {
 
 .event-modal-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
     align-items: center;
     padding: var(--space-lg);
     border-bottom: 1px solid var(--color-neutral-90);
@@ -1493,4 +1501,48 @@ body {
 .main-container::-webkit-scrollbar {
     width: 0;
     background: transparent;
+}
+
+/* ============================================
+   Splash Screen
+   ============================================ */
+
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--color-neutral-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.splash-logo {
+    width: 60%;
+    max-width: 300px;
+    height: auto;
+    animation: slideUpFadeIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+@keyframes slideUpFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

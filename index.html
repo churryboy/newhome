@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splashScreen">
+        <img src="image/splash.png" alt="QANDA" class="splash-logo">
+    </div>
+
     <!-- Background Bars -->
     <div class="background-bars">
         <!-- Status Bar -->
@@ -71,16 +76,6 @@
                         <div class="calendar-header">
                             <h2 class="calendar-title type-headline-strong" id="calendarTitle">11월</h2>
                             <div class="calendar-nav-btns">
-                                <button class="calendar-nav-btn" id="prevMonthBtn" aria-label="이전 달">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button class="calendar-nav-btn" id="nextMonthBtn" aria-label="다음 달">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
                                 <button class="calendar-nav-btn" id="collapseBtn" aria-label="접기/펼치기">
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="18 15 12 9 6 15"></polyline>
@@ -124,7 +119,7 @@
                     <span class="widget-label type-subheadline">문제풀이</span>
                 </div>
                 <div class="widget-cards-right">
-                    <div class="widget-card-small">
+                    <div class="widget-card-small widget-card-study-time">
                         <div class="widget-small-content">
                             <div class="widget-small-title">어제 순공시간</div>
                             <div class="widget-small-value" id="yesterdayStudyTime">0h 0m</div>
@@ -136,13 +131,18 @@
                             <div class="widget-friends-list">
                                 <div class="friend-item">
                                     <span class="friend-nickname">민지</span>
-                                    <span class="friend-emoji">📚</span>
-                                    <span class="friend-activity">공부중</span>
+                                    <span class="friend-emoji">🟢</span>
+                                    <span class="friend-activity">접속중</span>
                                 </div>
                                 <div class="friend-item">
                                     <span class="friend-nickname">준호</span>
                                     <span class="friend-emoji">💤</span>
                                     <span class="friend-activity">오프라인</span>
+                                </div>
+                                <div class="friend-item">
+                                    <span class="friend-nickname">지혜</span>
+                                    <span class="friend-emoji">⏱️</span>
+                                    <span class="friend-activity">순공중</span>
                                 </div>
                             </div>
                         </div>
