@@ -460,28 +460,47 @@ body {
 
 .calendar-grid {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    grid-auto-rows: 1fr;
+    grid-template-columns: repeat(7, 1fr);
     gap: var(--space-xxs);
-    transition: all 0.3s ease;
-    overflow: hidden;
     width: 100%;
     box-sizing: border-box;
 }
 
 .calendar-day {
-    aspect-ratio: 1 / 1;
+    position: relative;
+    width: 100%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.calendar-day::before {
+    content: '';
+    display: block;
+    padding-bottom: 100%;
+}
+
+.calendar-day-number {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-xs);
     background: transparent;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    position: relative;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
+}
+
+.calendar-day.selected .calendar-day-number {
+    background: var(--color-neutral-90);
+    border-radius: 50%;
+}
+
+.calendar-day:hover:not(.other-month) .calendar-day-number {
+    background: var(--color-neutral-95);
+    border-radius: 50%;
 }
 
 .calendar-day.other-month {
@@ -491,16 +510,6 @@ body {
 .calendar-day.today .calendar-day-number {
     color: var(--color-primary-50);
     font-weight: 700;
-}
-
-.calendar-day.selected {
-    background: var(--color-neutral-90);
-    border-radius: 50%;
-}
-
-.calendar-day:hover:not(.other-month) {
-    background: var(--color-neutral-95);
-    border-radius: 50%;
 }
 
 .calendar-day:active:not(.other-month) {
