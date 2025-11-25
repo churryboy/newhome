@@ -1559,6 +1559,13 @@ body {
     transform: none !important;
 }
 
+.widget-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-neutral-90);
+    margin-bottom: var(--space-xs);
+}
+
 .camera-preview-container {
     flex: 1;
     width: 100%;
