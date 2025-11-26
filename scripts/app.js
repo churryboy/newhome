@@ -34,6 +34,25 @@ class DDayManager {
         this.updateStats();
         this.setYesterdayStudyTime();
         this.checkServerConnection();
+        this.animateMinjiStatus();
+    }
+
+    animateMinjiStatus() {
+        // After 1 second, change 민지's status from 오프라인 to 접속중
+        setTimeout(() => {
+            const friendMinji = document.getElementById('friendMinji');
+            if (friendMinji) {
+                const activity = friendMinji.querySelector('.friend-activity');
+                const emoji = friendMinji.querySelector('.friend-emoji');
+                
+                if (activity) {
+                    activity.textContent = '접속중';
+                }
+                if (emoji) {
+                    emoji.textContent = '🟢';
+                }
+            }
+        }, 1000);
     }
 
     updateStatusBar() {
@@ -111,6 +130,12 @@ class DDayManager {
         }
         if (modalSaveButton) {
             modalSaveButton.addEventListener('click', () => this.saveEventFromModal());
+        }
+
+        // Search Results View
+        const searchResultsBack = document.getElementById('searchResultsBack');
+        if (searchResultsBack) {
+            searchResultsBack.addEventListener('click', () => this.closeSearchResults());
         }
     }
 
@@ -878,19 +903,20 @@ class DDayManager {
     }
 
     selectDate(dateStr) {
+        // Calendar date selection disabled
         // Remove previous selection
-        document.querySelectorAll('.calendar-day.selected').forEach(day => {
-            day.classList.remove('selected');
-        });
+        // document.querySelectorAll('.calendar-day.selected').forEach(day => {
+        //     day.classList.remove('selected');
+        // });
         
-        // Add selection to clicked date
-        const clickedDay = document.querySelector(`[data-date="${dateStr}"]`);
-        if (clickedDay) {
-            clickedDay.classList.add('selected');
-        }
+        // // Add selection to clicked date
+        // const clickedDay = document.querySelector(`[data-date="${dateStr}"]`);
+        // if (clickedDay) {
+        //     clickedDay.classList.add('selected');
+        // }
         
-        this.selectedDate = dateStr;
-        this.openEventModal(dateStr);
+        // this.selectedDate = dateStr;
+        // this.openEventModal(dateStr);
     }
 
     openEventModal(dateStr) {
@@ -994,18 +1020,185 @@ class DDayManager {
             
             const reader = new FileReader();
             reader.onload = (event) => {
-                // Update the current active preview image with the captured image
-                const activeImage = document.querySelector('.preview-image.active');
-                if (activeImage) {
-                    activeImage.src = event.target.result;
-                    // Store the image data
-                    this.currentImageData = event.target.result;
-                }
+                // Store the image data
+                this.currentImageData = event.target.result;
+                // Show search results view with the captured photo
+                this.showSearchResults(event.target.result);
             };
             reader.readAsDataURL(file);
         });
         
         input.click();
+    }
+
+    async showSearchResults(imageData) {
+        const searchResultsView = document.getElementById('searchResultsView');
+        const capturedPhotoImage = document.getElementById('capturedPhotoImage');
+        
+        if (searchResultsView && capturedPhotoImage) {
+            // Set the captured photo
+            capturedPhotoImage.src = imageData;
+            
+            // Show the search results view
+            searchResultsView.style.display = 'block';
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+
+            // Generate and display solution for the uploaded image
+            await this.generateAndDisplaySolution(imageData);
+        }
+    }
+
+    async generateAndDisplaySolution(imageData) {
+        const loadingDiv = document.getElementById('solutionPanelLoading');
+        const contentDiv = document.getElementById('solutionPanelContent');
+        
+        if (!loadingDiv || !contentDiv) return;
+        
+        // Show loading state
+        loadingDiv.style.display = 'flex';
+        contentDiv.style.display = 'none';
+        
+        console.log('Starting solution generation...');
+        
+        try {
+            // Get solution from LLM
+            const solution = await this.getSolutionFromLLM(imageData);
+            
+            console.log('Solution received from LLM:', solution);
+            
+            // Hide loading, show content
+            loadingDiv.style.display = 'none';
+            contentDiv.style.display = 'block';
+            
+            // Render solution steps
+            this.renderSolutionSteps(solution, contentDiv);
+        } catch (error) {
+            console.error('❌ Failed to generate solution:', error);
+            console.error('Error details:', error.message);
+            
+            // Show error message to user
+            loadingDiv.style.display = 'none';
+            contentDiv.style.display = 'block';
+            
+            // Show error in the panel
+            contentDiv.innerHTML = `
+                <div style="padding: var(--space-base); background: #FEE; border-radius: var(--radius-base); color: #C00;">
+                    <strong>오류 발생:</strong> ${error.message}
+                    <br><br>
+                    서버가 실행 중인지, API 키가 설정되었는지 확인해주세요.
+                </div>
+            `;
+        }
+    }
+
+    renderSolutionSteps(solution, container) {
+        if (!solution || !solution.steps) return;
+        
+        container.innerHTML = solution.steps.map(step => `
+            <div class="solution-panel-step">
+                <div class="solution-panel-step-number">Step ${step.number}</div>
+                <div class="solution-panel-step-content">${step.content}</div>
+            </div>
+        `).join('');
+        
+        // Render LaTeX math expressions
+        if (window.renderMathInElement) {
+            window.renderMathInElement(container, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+            });
+        }
+    }
+
+    async getSolutionFromLLM(imageData) {
+        console.log('Calling solve-problem API...');
+        console.log('Image data length:', imageData.length);
+        
+        try {
+            const response = await fetch(`${this.apiUrl}/solve-problem`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    image: imageData
+                })
+            });
+
+            console.log('API response status:', response.status);
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.error || `Server error: ${response.status}`;
+                console.error('API error response:', errorData);
+                throw new Error(errorMessage);
+            }
+
+            const result = await response.json();
+            console.log('API result:', result);
+            
+            if (!result.solution || !result.solution.steps) {
+                throw new Error('Invalid solution format from server');
+            }
+            
+            return result.solution;
+        } catch (error) {
+            console.error('❌ Error calling LLM API:', error);
+            throw error;
+        }
+    }
+
+
+    closeSearchResults() {
+        const searchResultsView = document.getElementById('searchResultsView');
+        
+        if (searchResultsView) {
+            searchResultsView.style.display = 'none';
+            
+            // Restore body scroll
+            document.body.style.overflow = '';
+            
+            // Update camera preview with the latest uploaded image
+            if (this.currentImageData) {
+                this.updateCameraPreview(this.currentImageData);
+            }
+        }
+    }
+
+    updateCameraPreview(imageData) {
+        // Update the first preview image with the newly captured image
+        const firstPreviewImage = document.querySelector('.preview-image');
+        if (firstPreviewImage) {
+            firstPreviewImage.src = imageData;
+        }
+        
+        // Scroll back to the first image
+        const cameraPreview = document.getElementById('cameraPreview');
+        if (cameraPreview) {
+            cameraPreview.scrollTo({
+                left: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Update pagination to show first dot as active
+        const dots = document.querySelectorAll('.pagination-dot');
+        dots.forEach((dot, index) => {
+            if (index === 0) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+        
+        this.currentPreviewIndex = 0;
     }
 }
 

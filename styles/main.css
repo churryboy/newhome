@@ -1679,3 +1679,448 @@ body {
 .camera-button:active {
     transform: scale(0.98);
 }
+
+/* ============================================
+   Search Results View
+   ============================================ */
+
+.search-results-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-neutral-100);
+    z-index: 2000;
+    overflow-y: auto;
+}
+
+.search-results-header {
+    position: sticky;
+    top: 0;
+    background: var(--color-neutral-100);
+    padding: var(--space-base) var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-base);
+    border-bottom: 1px solid var(--color-neutral-90);
+    z-index: 10;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    padding: var(--space-xs);
+    cursor: pointer;
+    color: var(--color-neutral-10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.back-button:active {
+    opacity: 0.6;
+}
+
+.search-results-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-neutral-10);
+}
+
+.search-results-content {
+    padding: var(--space-lg);
+    padding-bottom: 100px;
+}
+
+/* Captured Photo */
+.captured-photo-container {
+    width: 100%;
+    height: 340px;
+    background: var(--color-neutral-98);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--color-neutral-90);
+    overflow: hidden;
+    margin-bottom: var(--space-lg);
+}
+
+.captured-photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
+}
+
+.action-btn {
+    flex: 1;
+    padding: var(--space-sm) var(--space-base);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-xs);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 600;
+}
+
+.action-btn-primary {
+    background: var(--color-neutral-10);
+    color: var(--color-neutral-100);
+    border: none;
+}
+
+.action-btn-primary:active {
+    background: var(--color-neutral-20);
+}
+
+.action-btn-secondary {
+    background: var(--color-neutral-100);
+    color: var(--color-neutral-10);
+    border: 1.5px solid var(--color-neutral-80);
+}
+
+.action-btn-secondary:active {
+    background: var(--color-neutral-98);
+}
+
+/* Textbook Verification */
+.textbook-verification {
+    margin-bottom: var(--space-xl);
+}
+
+.verification-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-sm);
+}
+
+.verification-title {
+    color: var(--color-neutral-10);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.verification-content {
+    background: #F3E8FF;
+    border-radius: var(--radius-lg);
+    padding: var(--space-base);
+}
+
+.verification-content p {
+    color: var(--color-neutral-10);
+    font-size: 13px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Similar Problems */
+.similar-problems {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-base);
+}
+
+.similar-problem-card {
+    background: var(--color-neutral-100);
+    border: 1.5px solid var(--color-neutral-90);
+    border-radius: var(--radius-lg);
+    padding: var(--space-base);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.similar-problem-card:active {
+    background: var(--color-neutral-98);
+    transform: scale(0.98);
+}
+
+.problem-number {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-primary-50);
+    margin-bottom: var(--space-xxs);
+}
+
+.problem-description {
+    color: var(--color-neutral-30);
+    margin-bottom: var(--space-sm);
+    font-size: 12px;
+}
+
+.problem-image-container {
+    width: 100%;
+    margin-bottom: var(--space-sm);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+}
+
+.problem-image-large {
+    margin-bottom: var(--space-base);
+}
+
+.problem-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.problem-tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+}
+
+.problem-tag {
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--color-neutral-95);
+    color: var(--color-neutral-30);
+    font-weight: 500;
+}
+
+.problem-tag.tag-orange {
+    background: #FFF4ED;
+    color: var(--color-primary-50);
+}
+
+.chevron-icon {
+    position: absolute;
+    right: var(--space-base);
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-neutral-60);
+}
+
+/* ============================================
+   Solution View
+   ============================================ */
+
+.solution-view {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--color-neutral-100);
+    z-index: 3000;
+    overflow-y: auto;
+}
+
+.solution-header {
+    position: sticky;
+    top: 0;
+    background: var(--color-neutral-100);
+    padding: var(--space-base) var(--space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--space-base);
+    border-bottom: 1px solid var(--color-neutral-90);
+    z-index: 10;
+}
+
+.solution-title {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-neutral-10);
+}
+
+.solution-content {
+    padding: var(--space-lg);
+    padding-bottom: 100px;
+}
+
+/* Loading State */
+.solution-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xxl) 0;
+    gap: var(--space-base);
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--color-neutral-90);
+    border-top-color: var(--color-primary-50);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Solution Display */
+.solution-problem {
+    margin-bottom: var(--space-xl);
+}
+
+.solution-problem h3,
+.solution-steps h3 {
+    color: var(--color-neutral-10);
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: var(--space-base);
+}
+
+.problem-image-wrapper {
+    background: var(--color-neutral-98);
+    border: 2px solid var(--color-neutral-90);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    max-height: 300px;
+}
+
+.solution-problem-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Solution Steps */
+.steps-content {
+    background: var(--color-neutral-98);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+}
+
+.solution-step {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--color-neutral-90);
+}
+
+.solution-step:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.step-number {
+    display: inline-block;
+    background: var(--color-primary-50);
+    color: var(--color-neutral-100);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: var(--radius-base);
+    margin-bottom: var(--space-sm);
+}
+
+.step-content {
+    color: var(--color-neutral-10);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+/* Solution Thumbnail in Cards */
+.solution-thumbnail {
+    width: 100%;
+    height: 60px;
+    background: var(--color-neutral-98);
+    border: 1px solid var(--color-neutral-90);
+    border-radius: var(--radius-base);
+    overflow: hidden;
+    margin-bottom: var(--space-sm);
+    position: relative;
+}
+
+.solution-thumbnail-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(1px);
+    opacity: 0.7;
+}
+
+.solution-thumbnail-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* ============================================
+   Solution Panel (inline in search results)
+   ============================================ */
+
+.solution-panel {
+    background: var(--color-neutral-100);
+    border: 1.5px solid var(--color-neutral-90);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-top: var(--space-base);
+}
+
+.solution-panel-header {
+    margin-bottom: var(--space-base);
+}
+
+.solution-panel-header h3 {
+    color: var(--color-neutral-10);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.solution-panel-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl) 0;
+    gap: var(--space-base);
+}
+
+.solution-panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.solution-panel-step {
+    padding: var(--space-base);
+    background: var(--color-neutral-98);
+    border-radius: var(--radius-base);
+}
+
+.solution-panel-step-number {
+    display: inline-block;
+    background: var(--color-primary-50);
+    color: var(--color-neutral-100);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-xs);
+}
+
+.solution-panel-step-content {
+    color: var(--color-neutral-10);
+    font-size: 14px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
