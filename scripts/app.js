@@ -148,6 +148,10 @@ class DDayManager {
         const energyButton = document.querySelector('.profile-stat');
         if (energyButton) {
             energyButton.addEventListener('click', () => this.handleEnergyClick());
+            energyButton.addEventListener('touchend', (e) => {
+                e.preventDefault(); // Prevent double-firing with click
+                this.handleEnergyClick();
+            });
         }
 
         // Config Modal
@@ -625,34 +629,18 @@ class DDayManager {
         const upcomingEventsList = document.getElementById('upcomingEventsList');
         if (!upcomingEventsList) return;
         
-        // Get upcoming events (max 2, or 1 if collapsed)
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        // Always show these two placeholder events
+        const permanentEvents = [
+            { title: '음악 수행 보고서 제출' },
+            { title: '체육 실기 - 윗몸일으키기' }
+        ];
         
         const maxEvents = this.isCalendarCollapsed ? 1 : 2;
-        const upcomingEvents = this.events
-            .filter(e => new Date(e.date) >= today)
-            .sort((a, b) => new Date(a.date) - new Date(b.date))
-            .slice(0, maxEvents);
-        
-        if (upcomingEvents.length === 0) {
-            upcomingEventsList.innerHTML = `
-                <div style="color: var(--color-neutral-50); font-size: 12px; text-align: center; padding: var(--space-lg) 0;">
-                    예정된 이벤트가 없습니다
-                </div>
-            `;
-            return;
-        }
+        const displayEvents = permanentEvents.slice(0, maxEvents);
         
         const colors = ['color-purple', 'color-yellow', 'color-blue'];
         
-        const html = upcomingEvents.map((event, index) => {
-            const eventDate = new Date(event.date);
-            const dateStr = eventDate.toLocaleDateString('ko-KR', {
-                month: 'long',
-                day: 'numeric'
-            });
-            const timeStr = event.detail || '';
+        const html = displayEvents.map((event, index) => {
             const colorClass = colors[index % colors.length];
             
             return `
@@ -893,27 +881,6 @@ class DDayManager {
                 console.error('이벤트 불러오기 실패:', e);
                 this.events = [];
             }
-        }
-        
-        // Add placeholder events if no events exist
-        if (this.events.length === 0) {
-            this.events.push({
-                id: 'placeholder-1',
-                title: '지구과학 수행 제출',
-                date: '2025-11-26',
-                detail: '',
-                image: '',
-                createdAt: new Date().toISOString()
-            });
-            this.events.push({
-                id: 'placeholder-2',
-                title: '체육 - 윗몸일으키키',
-                date: '2025-11-26',
-                detail: '',
-                image: '',
-                createdAt: new Date().toISOString()
-            });
-            this.saveEvents();
         }
     }
 
