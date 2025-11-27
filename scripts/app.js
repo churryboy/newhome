@@ -1424,11 +1424,11 @@ class DDayManager {
             },
             cta1: {
                 description: '이 문제를 틀렸다면 개념이 완전히 잡히지 않았을 수 있습니다. 동일한 유형의 유사 문항(정답률 55%)으로 확실하게 복습해 보세요.',
-                button: '📝 유사 문항으로 재도전하기'
+                button: '📝 유사 문항 풀어볼래요'
             },
             cta2: {
                 description: '이 문제와 논리 구조가 같은 쌍둥이 문제를 통해 실력을 점검해 보세요.',
-                button: '🧩 쌍둥이 문제 풀어보기'
+                button: '🧩 쌍둥이 문제 풀어볼래요'
             }
         };
         
@@ -1558,12 +1558,16 @@ class DDayManager {
     updateCartBadge() {
         const cartBadge = document.getElementById('cartBadge');
         if (cartBadge) {
-            cartBadge.textContent = this.cartItems.length;
-            if (this.cartItems.length === 0) {
+            const count = this.cartItems.length;
+            cartBadge.textContent = count;
+            
+            if (count === 0) {
                 cartBadge.style.display = 'none';
             } else {
-                cartBadge.style.display = 'block';
+                cartBadge.style.display = 'inline-block';
             }
+            
+            console.log('✅ Cart badge updated:', count);
         }
     }
 
