@@ -342,6 +342,14 @@
                 </svg>
             </button>
             <h1 class="search-results-title type-headline-strong">검색 결과</h1>
+            <button class="cart-button" id="cartButton" aria-label="장바구니">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/>
+                    <circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <span class="cart-badge" id="cartBadge">0</span>
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -380,6 +388,12 @@
                 </div>
             </div>
 
+            <!-- CTA Section -->
+            <div class="cta-section" id="ctaSection">
+                <div class="cta-description type-body"></div>
+                <button class="cta-button type-subheadline"></button>
+            </div>
+
             <!-- Solution Panel -->
             <div class="solution-panel">
                 <div class="solution-panel-header">
@@ -396,6 +410,121 @@
                 <div class="solution-panel-content" id="solutionPanelContent" style="display: none;">
                     <!-- Steps will be dynamically inserted here -->
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal-overlay" id="cartModalOverlay">
+        <div class="cart-modal">
+            <div class="cart-modal-header">
+                <h3 class="type-title2">장바구니</h3>
+                <button class="cart-close-btn" id="cartCloseBtn">✕</button>
+            </div>
+            <div class="cart-modal-body" id="cartModalBody">
+                <div class="cart-empty-state" id="cartEmptyState">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                    <p class="type-body">장바구니가 비어있습니다</p>
+                </div>
+                <div class="cart-items-list" id="cartItemsList"></div>
+            </div>
+            <div class="cart-modal-footer">
+                <button class="cart-confirm-btn" id="cartConfirmBtn">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Modal (Hidden) -->
+    <div class="config-modal-overlay" id="configModalOverlay">
+        <div class="config-modal">
+            <div class="config-modal-header">
+                <h3 class="type-title2">설정</h3>
+                <button class="config-close-btn" id="configCloseBtn">✕</button>
+            </div>
+            <div class="config-modal-body">
+                <label class="config-label type-subheadline">문제집 이름</label>
+                <input type="text" class="config-input type-body" id="textbookNameInput" placeholder="예: 생각하는 황소 중1 상 ESSENCE">
+                
+                <div class="config-divider"></div>
+                
+                <label class="config-label type-subheadline">검증 메시지 버전</label>
+                <div class="config-radio-group">
+                    <label class="config-radio-item">
+                        <input type="radio" name="verificationVersion" value="default" checked>
+                        <div class="radio-content">
+                            <div class="radio-header">기본 (검증 메시지 없음)</div>
+                            <div class="radio-description">검증 섹션을 표시하지 않습니다</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="verificationVersion" value="v1">
+                        <div class="radio-content">
+                            <div class="radio-header">🏆 인증 풀이 (v1)</div>
+                            <div class="radio-description">콴다 학생들이 가장 많이 참고한 검증된 풀이</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="verificationVersion" value="v2">
+                        <div class="radio-content">
+                            <div class="radio-header">🚨 심화 오답 주의 (v2)</div>
+                            <div class="radio-description">검색량 급상승, 많은 학생들이 어려워하는 문항</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="verificationVersion" value="v3">
+                        <div class="radio-content">
+                            <div class="radio-header">🏆 베스트 풀이 (v3)</div>
+                            <div class="radio-description">10만 명 데이터 중 이해도가 가장 높은 풀이</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="verificationVersion" value="v4">
+                        <div class="radio-content">
+                            <div class="radio-header">🔥 상위권 필수 유형 (v4)</div>
+                            <div class="radio-description">High Level 단계, 상위권 진입 필수 관문</div>
+                        </div>
+                    </label>
+                </div>
+                
+                <div class="config-divider"></div>
+                
+                <label class="config-label type-subheadline">CTA 버튼</label>
+                <div class="config-radio-group">
+                    <label class="config-radio-item">
+                        <input type="radio" name="ctaVersion" value="default" checked>
+                        <div class="radio-content">
+                            <div class="radio-header">기본 (CTA 없음)</div>
+                            <div class="radio-description">CTA 버튼을 표시하지 않습니다</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="ctaVersion" value="cta1">
+                        <div class="radio-content">
+                            <div class="radio-header">📝 유사 문항 재도전</div>
+                            <div class="radio-description">동일 유형의 유사 문항으로 복습</div>
+                        </div>
+                    </label>
+                    
+                    <label class="config-radio-item">
+                        <input type="radio" name="ctaVersion" value="cta2">
+                        <div class="radio-content">
+                            <div class="radio-header">🧩 쌍둥이 문제</div>
+                            <div class="radio-description">논리 구조가 같은 문제로 실력 점검</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="config-modal-footer">
+                <button class="config-apply-btn" id="configApplyBtn">적용하기</button>
             </div>
         </div>
     </div>

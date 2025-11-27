@@ -2124,3 +2124,535 @@ body {
     line-height: 1.7;
     white-space: pre-wrap;
 }
+
+/* ==================== Config Modal Styles ==================== */
+
+.config-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.config-modal-overlay.active {
+    display: flex;
+}
+
+.config-modal {
+    background: var(--color-neutral-100);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.config-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-neutral-90);
+    flex-shrink: 0;
+}
+
+.config-modal-header h3 {
+    color: var(--color-neutral-10);
+    margin: 0;
+}
+
+.config-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-neutral-50);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+}
+
+.config-close-btn:hover {
+    background: var(--color-neutral-95);
+}
+
+.config-modal-body {
+    padding: var(--space-lg);
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+}
+
+.config-label {
+    display: block;
+    color: var(--color-neutral-30);
+    margin-bottom: var(--space-xs);
+}
+
+.config-input {
+    width: 100%;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-neutral-80);
+    border-radius: var(--radius-base);
+    font-size: 14px;
+    color: var(--color-neutral-10);
+    background: var(--color-neutral-100);
+    box-sizing: border-box;
+}
+
+.config-input:focus {
+    outline: none;
+    border-color: var(--color-primary-50);
+}
+
+.config-modal-footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--color-neutral-90);
+    flex-shrink: 0;
+}
+
+.config-apply-btn {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary-50);
+    color: white;
+    border: none;
+    border-radius: var(--radius-base);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.config-apply-btn:hover {
+    background: var(--color-primary-40);
+}
+
+.config-apply-btn:active {
+    transform: scale(0.98);
+}
+
+.config-divider {
+    height: 1px;
+    background: var(--color-neutral-90);
+    margin: var(--space-lg) 0;
+}
+
+.config-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.config-radio-item {
+    display: flex;
+    align-items: flex-start;
+    padding: var(--space-sm);
+    border: 1px solid var(--color-neutral-90);
+    border-radius: var(--radius-base);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.config-radio-item:hover {
+    background: var(--color-neutral-95);
+    border-color: var(--color-primary-70);
+}
+
+.config-radio-item input[type="radio"] {
+    margin-top: 2px;
+    margin-right: var(--space-sm);
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.config-radio-item input[type="radio"]:checked {
+    accent-color: var(--color-primary-50);
+}
+
+.config-radio-item:has(input[type="radio"]:checked) {
+    background: var(--color-primary-95);
+    border-color: var(--color-primary-50);
+}
+
+.radio-content {
+    flex: 1;
+}
+
+.radio-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-neutral-10);
+    margin-bottom: 4px;
+}
+
+.radio-description {
+    font-size: 12px;
+    color: var(--color-neutral-50);
+    line-height: 1.4;
+}
+
+/* ==================== CTA Section Styles ==================== */
+
+.cta-section {
+    display: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin: var(--space-md) 0;
+}
+
+.cta-section.active {
+    display: block;
+}
+
+.cta-description {
+    color: white;
+    line-height: 1.6;
+    margin-bottom: var(--space-md);
+}
+
+.cta-button {
+    width: 100%;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: var(--radius-base);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button:active {
+    transform: translateY(0);
+}
+
+/* ==================== Verification CTA Styles ==================== */
+
+.verification-cta-description {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-neutral-90);
+    color: var(--color-neutral-30);
+    line-height: 1.6;
+}
+
+.verification-cta-button {
+    width: 100%;
+    margin-top: var(--space-sm);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: var(--radius-base);
+    padding: var(--space-sm) var(--space-md);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.verification-cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.verification-cta-button:active {
+    transform: translateY(0);
+}
+
+/* ==================== Cart Button Styles ==================== */
+
+.cart-button {
+    position: relative;
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+}
+
+.cart-button:hover {
+    background: var(--color-neutral-95);
+}
+
+.cart-button svg {
+    stroke: var(--color-neutral-10);
+}
+
+.cart-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #EF4444;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    text-align: center;
+}
+
+.cart-badge:empty {
+    display: none;
+}
+
+/* ==================== Cart Modal Styles ==================== */
+
+.cart-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-modal-overlay.active {
+    display: flex;
+}
+
+.cart-modal {
+    background: var(--color-neutral-100);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+.cart-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-neutral-90);
+    flex-shrink: 0;
+}
+
+.cart-modal-header h3 {
+    color: var(--color-neutral-10);
+    margin: 0;
+}
+
+.cart-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--color-neutral-50);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: background 0.2s;
+}
+
+.cart-close-btn:hover {
+    background: var(--color-neutral-95);
+}
+
+.cart-modal-body {
+    padding: var(--space-md);
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex: 1;
+}
+
+.cart-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-xl) 0;
+    color: var(--color-neutral-50);
+}
+
+.cart-empty-state svg {
+    stroke: var(--color-neutral-70);
+    margin-bottom: var(--space-md);
+}
+
+.cart-empty-state.hidden {
+    display: none;
+}
+
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    border: 1px solid var(--color-neutral-90);
+    border-radius: var(--radius-base);
+    transition: all 0.2s;
+}
+
+.cart-item.selected {
+    border-color: var(--color-primary-50);
+    background: var(--color-primary-95);
+}
+
+.cart-item-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: var(--color-primary-50);
+    flex-shrink: 0;
+}
+
+.cart-item-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+}
+
+.cart-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.cart-item-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-neutral-10);
+}
+
+.cart-item-date {
+    font-size: 12px;
+    color: var(--color-neutral-50);
+}
+
+.cart-item-remove {
+    background: none;
+    border: none;
+    color: var(--color-neutral-50);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.cart-item-remove:hover {
+    background: var(--color-neutral-95);
+    color: #EF4444;
+}
+
+.cart-modal-footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--color-neutral-90);
+    flex-shrink: 0;
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.cart-confirm-btn {
+    flex: 1;
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-primary-50);
+    color: white;
+    border: none;
+    border-radius: var(--radius-base);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cart-confirm-btn:hover {
+    background: var(--color-primary-40);
+}
+
+.cart-confirm-btn:active {
+    transform: scale(0.98);
+}
+
+/* ==================== Toast Notification Styles ==================== */
+
+.toast {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--color-neutral-10);
+    color: white;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-lg);
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 10002;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.toast-success {
+    background: #10B981;
+}
+
+.toast-error {
+    background: #EF4444;
+}
+
+.toast-info {
+    background: var(--color-primary-50);
+}

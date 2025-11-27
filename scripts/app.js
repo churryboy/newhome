@@ -14,6 +14,12 @@ class DDayManager {
         this.selectedDate = null;
         this.currentPreviewIndex = 0;
         this.previewImages = [];
+        this.energyClickCount = 0; // Track energy button clicks
+        this.energyClickTimer = null; // Timer to reset click count
+        this.textbookName = localStorage.getItem('textbookName') || '생각하는 황소 중1 상 ESSENCE';
+        this.verificationVersion = localStorage.getItem('verificationVersion') || 'default';
+        this.ctaVersion = localStorage.getItem('ctaVersion') || 'default';
+        this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
         // Use relative URL for API calls (works both locally and on Vercel)
         this.apiUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000/api' 
@@ -136,6 +142,54 @@ class DDayManager {
         const searchResultsBack = document.getElementById('searchResultsBack');
         if (searchResultsBack) {
             searchResultsBack.addEventListener('click', () => this.closeSearchResults());
+        }
+
+        // Energy Button (Config Modal Trigger)
+        const energyButton = document.querySelector('.profile-stat');
+        if (energyButton) {
+            energyButton.addEventListener('click', () => this.handleEnergyClick());
+        }
+
+        // Config Modal
+        const configCloseBtn = document.getElementById('configCloseBtn');
+        const configApplyBtn = document.getElementById('configApplyBtn');
+        const configModalOverlay = document.getElementById('configModalOverlay');
+
+        if (configCloseBtn) {
+            configCloseBtn.addEventListener('click', () => this.closeConfigModal());
+        }
+        if (configApplyBtn) {
+            configApplyBtn.addEventListener('click', () => this.applyConfig());
+        }
+        if (configModalOverlay) {
+            configModalOverlay.addEventListener('click', (e) => {
+                if (e.target === configModalOverlay) {
+                    this.closeConfigModal();
+                }
+            });
+        }
+
+        // Cart Modal
+        const cartButton = document.getElementById('cartButton');
+        const cartCloseBtn = document.getElementById('cartCloseBtn');
+        const cartConfirmBtn = document.getElementById('cartConfirmBtn');
+        const cartModalOverlay = document.getElementById('cartModalOverlay');
+
+        if (cartButton) {
+            cartButton.addEventListener('click', () => this.openCartModal());
+        }
+        if (cartCloseBtn) {
+            cartCloseBtn.addEventListener('click', () => this.closeCartModal());
+        }
+        if (cartConfirmBtn) {
+            cartConfirmBtn.addEventListener('click', () => this.closeCartModal());
+        }
+        if (cartModalOverlay) {
+            cartModalOverlay.addEventListener('click', (e) => {
+                if (e.target === cartModalOverlay) {
+                    this.closeCartModal();
+                }
+            });
         }
     }
 
@@ -1039,6 +1093,12 @@ class DDayManager {
             // Set the captured photo
             capturedPhotoImage.src = imageData;
             
+            // Update verification section with random content
+            this.updateVerificationSection();
+            
+            // Update CTA section
+            this.updateCtaSection();
+            
             // Show the search results view
             searchResultsView.style.display = 'block';
             
@@ -1200,6 +1260,367 @@ class DDayManager {
         
         this.currentPreviewIndex = 0;
     }
+
+    // ==================== Config Modal Methods ====================
+    
+    handleEnergyClick() {
+        this.energyClickCount++;
+        
+        // Clear existing timer
+        if (this.energyClickTimer) {
+            clearTimeout(this.energyClickTimer);
+        }
+        
+        // Reset count after 2 seconds of no clicks
+        this.energyClickTimer = setTimeout(() => {
+            this.energyClickCount = 0;
+        }, 2000);
+        
+        // Open config modal after 4 clicks
+        if (this.energyClickCount >= 4) {
+            this.openConfigModal();
+            this.energyClickCount = 0;
+        }
+    }
+
+    openConfigModal() {
+        const modal = document.getElementById('configModalOverlay');
+        const input = document.getElementById('textbookNameInput');
+        
+        if (modal) {
+            modal.classList.add('active');
+            
+            // Pre-fill with current textbook name
+            if (input) {
+                input.value = this.textbookName;
+                setTimeout(() => input.focus(), 100);
+            }
+            
+            // Pre-select the current verification version
+            const versionRadio = document.querySelector(`input[name="verificationVersion"][value="${this.verificationVersion}"]`);
+            if (versionRadio) {
+                versionRadio.checked = true;
+            }
+            
+            // Pre-select the current CTA version
+            const ctaRadio = document.querySelector(`input[name="ctaVersion"][value="${this.ctaVersion}"]`);
+            if (ctaRadio) {
+                ctaRadio.checked = true;
+            }
+        }
+    }
+
+    closeConfigModal() {
+        const modal = document.getElementById('configModalOverlay');
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+
+    applyConfig() {
+        const input = document.getElementById('textbookNameInput');
+        const selectedVersion = document.querySelector('input[name="verificationVersion"]:checked');
+        const selectedCta = document.querySelector('input[name="ctaVersion"]:checked');
+        
+        if (input && input.value.trim()) {
+            this.textbookName = input.value.trim();
+            localStorage.setItem('textbookName', this.textbookName);
+            
+            console.log('✅ 문제집 이름 저장:', this.textbookName);
+        }
+        
+        if (selectedVersion) {
+            this.verificationVersion = selectedVersion.value;
+            localStorage.setItem('verificationVersion', this.verificationVersion);
+            
+            console.log('✅ 검증 버전 저장:', this.verificationVersion);
+        }
+        
+        if (selectedCta) {
+            this.ctaVersion = selectedCta.value;
+            localStorage.setItem('ctaVersion', this.ctaVersion);
+            
+            console.log('✅ CTA 버전 저장:', this.ctaVersion);
+        }
+        
+        this.closeConfigModal();
+    }
+
+    getVerificationContent() {
+        // Get the selected version (v1, v2, v3, v4, or default)
+        // Conditional words based on textbook name
+        const examType = this.textbookName.includes('생각하는 황소') ? '단원평가' : '내신대비';
+        const difficultyLevel = this.textbookName.includes('생각하는 황소') ? 'High Level 단계로' : '고난도 문항으로';
+        
+        const versions = {
+            default: {
+                icon: '',
+                header: '',
+                content: '',
+                hide: true
+            },
+            v1: {
+                icon: '🏆',
+                header: `${this.textbookName} 인증 풀이`,
+                content: `이 문항은 ${this.textbookName} 교재의 핵심 문항으로 파악됩니다. 콴다의 방대한 풀이 데이터 중, 실제 ${this.textbookName}을 푸는 학생들이 가장 많이 참고하고 '이해돼요'라 응답한 검증된 풀이를 확인해 보세요.`
+            },
+            v2: {
+                icon: '🚨',
+                header: `${this.textbookName} 심화 오답 주의 문항`,
+                content: `최근 일주일간 현재 검색한 문항의 검색량이 급상승하고 있습니다. ${examType} 기간, 많은 학생들이 어려워하는 구간으로 분석돼요.`
+            },
+            v3: {
+                icon: '🏆',
+                header: `${this.textbookName} 인증 풀이`,
+                content: `이 문항은 ${this.textbookName} 교재의 핵심 문항으로 파악됩니다. ${this.textbookName}를 학습 중인 2만 2134명의 데이터 중, 가장 이해도가 높았던 베스트 풀이를 확인해 보세요.`
+            },
+            v4: {
+                icon: '🔥',
+                header: '상위권 도약을 위한 필수 유형',
+                content: `이 문제는 ${this.textbookName}의 ${difficultyLevel} 확인되며, 상위권 진입을 위해 반드시 거쳐야 할 관문입니다. 최근 한 달간 검색량이 꾸준히 상승 중인 '학생들이 자주 막히는' 유형입니다.`
+            }
+        };
+        
+        // Return the selected version
+        return versions[this.verificationVersion] || versions.default;
+    }
+
+    updateVerificationSection() {
+        const verificationSection = document.querySelector('.textbook-verification');
+        const verificationHeader = document.querySelector('.verification-header');
+        const verificationTitle = document.querySelector('.verification-title');
+        const verificationContentDiv = document.querySelector('.verification-content');
+        
+        if (!verificationSection || !verificationHeader || !verificationTitle || !verificationContentDiv) {
+            return;
+        }
+        
+        const content = this.getVerificationContent();
+        const ctaContent = this.getCtaContent();
+        
+        // Hide verification section if default is selected
+        if (content.hide) {
+            verificationSection.style.display = 'none';
+            return;
+        }
+        
+        // Show verification section
+        verificationSection.style.display = 'block';
+        
+        // Update icon
+        const iconSvg = verificationHeader.querySelector('svg');
+        if (iconSvg && content.icon === '🚨') {
+            // Replace star icon with alert icon for v2
+            iconSvg.innerHTML = `<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>`;
+        } else if (iconSvg && content.icon === '🔥') {
+            // Replace with fire/trending icon for v4
+            iconSvg.innerHTML = `<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>`;
+        } else if (iconSvg) {
+            // Star icon for v1 and v3
+            iconSvg.innerHTML = `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`;
+        }
+        
+        // Update text content
+        verificationTitle.innerHTML = content.header;
+        
+        // Clear and rebuild verification content
+        verificationContentDiv.innerHTML = '';
+        
+        // Add verification text
+        const verificationText = document.createElement('p');
+        verificationText.className = 'type-body';
+        verificationText.textContent = content.content;
+        verificationContentDiv.appendChild(verificationText);
+        
+        // Add CTA content if not default
+        if (!ctaContent.hide) {
+            const ctaDescription = document.createElement('p');
+            ctaDescription.className = 'type-body verification-cta-description';
+            ctaDescription.textContent = ctaContent.description;
+            verificationContentDiv.appendChild(ctaDescription);
+            
+            const ctaButton = document.createElement('button');
+            ctaButton.className = 'verification-cta-button type-subheadline';
+            ctaButton.textContent = ctaContent.button;
+            ctaButton.addEventListener('click', () => this.addToCart());
+            verificationContentDiv.appendChild(ctaButton);
+        }
+    }
+
+    getCtaContent() {
+        // Get the selected CTA version
+        const ctas = {
+            default: {
+                description: '',
+                button: '',
+                hide: true
+            },
+            cta1: {
+                description: '이 문제를 틀렸다면 개념이 완전히 잡히지 않았을 수 있습니다. 동일한 유형의 유사 문항(정답률 55%)으로 확실하게 복습해 보세요.',
+                button: '📝 유사 문항으로 재도전하기'
+            },
+            cta2: {
+                description: '이 문제와 논리 구조가 같은 쌍둥이 문제를 통해 실력을 점검해 보세요.',
+                button: '🧩 쌍둥이 문제 풀어보기'
+            }
+        };
+        
+        return ctas[this.ctaVersion] || ctas.default;
+    }
+
+    updateCtaSection() {
+        // CTA is now integrated into verification section
+        // This method is kept for backwards compatibility but does nothing
+        // All CTA logic is handled in updateVerificationSection()
+    }
+
+    // ==================== Cart Functions ====================
+
+    openCartModal() {
+        const cartModalOverlay = document.getElementById('cartModalOverlay');
+        if (cartModalOverlay) {
+            cartModalOverlay.classList.add('active');
+            this.renderCartItems();
+        }
+    }
+
+    closeCartModal() {
+        const cartModalOverlay = document.getElementById('cartModalOverlay');
+        if (cartModalOverlay) {
+            cartModalOverlay.classList.remove('active');
+        }
+    }
+
+    addToCart() {
+        if (!this.currentImageData) {
+            console.warn('⚠️ No image data to add to cart');
+            return;
+        }
+
+        const timestamp = Date.now();
+        const cartItem = {
+            id: timestamp,
+            imageData: this.currentImageData,
+            timestamp: timestamp,
+            selected: true,
+            textbookName: this.textbookName
+        };
+
+        this.cartItems.push(cartItem);
+        this.saveCart();
+        this.updateCartBadge();
+
+        console.log('✅ Item added to cart:', cartItem.id);
+
+        // Show feedback to user
+        this.showToast('장바구니에 추가되었습니다', 'success');
+    }
+
+    removeFromCart(itemId) {
+        this.cartItems = this.cartItems.filter(item => item.id !== itemId);
+        this.saveCart();
+        this.updateCartBadge();
+        this.renderCartItems();
+
+        console.log('✅ Item removed from cart:', itemId);
+    }
+
+    toggleCartItemSelection(itemId) {
+        const item = this.cartItems.find(item => item.id === itemId);
+        if (item) {
+            item.selected = !item.selected;
+            this.saveCart();
+            this.renderCartItems();
+        }
+    }
+
+    renderCartItems() {
+        const cartItemsList = document.getElementById('cartItemsList');
+        const cartEmptyState = document.getElementById('cartEmptyState');
+
+        if (!cartItemsList || !cartEmptyState) return;
+
+        if (this.cartItems.length === 0) {
+            cartEmptyState.classList.remove('hidden');
+            cartItemsList.innerHTML = '';
+            return;
+        }
+
+        cartEmptyState.classList.add('hidden');
+        
+        cartItemsList.innerHTML = this.cartItems.map(item => {
+            const date = new Date(item.timestamp);
+            const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            
+            return `
+                <div class="cart-item ${item.selected ? 'selected' : ''}">
+                    <input 
+                        type="checkbox" 
+                        class="cart-item-checkbox" 
+                        ${item.selected ? 'checked' : ''}
+                        data-item-id="${item.id}"
+                    >
+                    <img src="${item.imageData}" alt="문제 이미지" class="cart-item-image">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.textbookName}</div>
+                        <div class="cart-item-date">${formattedDate}</div>
+                    </div>
+                    <button class="cart-item-remove" data-item-id="${item.id}">×</button>
+                </div>
+            `;
+        }).join('');
+
+        // Add event listeners for checkboxes and remove buttons
+        const checkboxes = cartItemsList.querySelectorAll('.cart-item-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const itemId = parseInt(e.target.getAttribute('data-item-id'));
+                this.toggleCartItemSelection(itemId);
+            });
+        });
+
+        const removeButtons = cartItemsList.querySelectorAll('.cart-item-remove');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const itemId = parseInt(e.target.getAttribute('data-item-id'));
+                this.removeFromCart(itemId);
+            });
+        });
+    }
+
+    updateCartBadge() {
+        const cartBadge = document.getElementById('cartBadge');
+        if (cartBadge) {
+            cartBadge.textContent = this.cartItems.length;
+            if (this.cartItems.length === 0) {
+                cartBadge.style.display = 'none';
+            } else {
+                cartBadge.style.display = 'block';
+            }
+        }
+    }
+
+    saveCart() {
+        localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+    }
+
+    showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 2000);
+    }
 }
 
 // Toast animations
@@ -1232,6 +1653,7 @@ document.head.appendChild(style);
 window.ddayManager = null;
 document.addEventListener('DOMContentLoaded', () => {
     window.ddayManager = new DDayManager();
+    window.ddayManager.updateCartBadge();
     
     // Splash screen handling
     const splashScreen = document.getElementById('splashScreen');
