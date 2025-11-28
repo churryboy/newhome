@@ -2418,6 +2418,8 @@ body {
     border-radius: 10px;
     min-width: 16px;
     text-align: center;
+    z-index: 20;
+    pointer-events: none;
 }
 
 .cart-badge:empty {
