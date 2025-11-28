@@ -1666,12 +1666,12 @@ class DDayManager {
             paymentMethod: paymentMethod
         });
 
-        // Send notification email to dino.lee@mathpresso.com
+        // Save data to Google Sheets
         try {
             await this.sendNotificationEmail(email, selectedItems, total);
         } catch (error) {
-            console.error('❌ Failed to send notification email:', error);
-            // Continue with payment even if email fails
+            console.error('❌ Failed to save to Google Sheets:', error);
+            // Continue with payment even if Google Sheets fails
         }
 
         // Show payment success modal
@@ -1693,12 +1693,13 @@ class DDayManager {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to send notification email');
+                throw new Error('Failed to save data to Google Sheets');
             }
 
-            console.log('✅ Notification email sent to dino.lee@mathpresso.com');
+            const result = await response.json();
+            console.log('✅ Data saved to Google Sheets successfully:', result);
         } catch (error) {
-            console.error('❌ Error sending notification email:', error);
+            console.error('❌ Error saving data to Google Sheets:', error);
             throw error;
         }
     }
