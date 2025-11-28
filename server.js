@@ -243,8 +243,8 @@ app.post('/api/solve-problem', async (req, res) => {
     }
 });
 
-// Google Sheets notification endpoint
-app.post('/api/send-notification', async (req, res) => {
+// Google Sheets webhook endpoint
+app.post('/api/google-sheets-webhook', async (req, res) => {
     try {
         const { userEmail, itemCount, total } = req.body;
 

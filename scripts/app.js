@@ -1668,7 +1668,7 @@ class DDayManager {
 
         // Save data to Google Sheets
         try {
-            await this.sendNotificationEmail(email, selectedItems, total);
+            await this.sendDataToGoogleSheets(email, selectedItems.length, total);
         } catch (error) {
             console.error('❌ Failed to save to Google Sheets:', error);
             // Continue with payment even if Google Sheets fails
@@ -1678,16 +1678,16 @@ class DDayManager {
         this.showPaymentSuccessModal();
     }
 
-    async sendNotificationEmail(userEmail, items, total) {
+    async sendDataToGoogleSheets(userEmail, itemCount, total) {
         try {
-            const response = await fetch('/api/send-notification', {
+            const response = await fetch('/api/google-sheets-webhook', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     userEmail: userEmail,
-                    itemCount: items.length,
+                    itemCount: itemCount,
                     total: total
                 })
             });
