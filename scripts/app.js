@@ -173,27 +173,23 @@ class DDayManager {
             });
         }
 
-        // Cart Modal
+        // Cart View
         const cartButton = document.getElementById('cartButton');
-        const cartCloseBtn = document.getElementById('cartCloseBtn');
-        const cartConfirmBtn = document.getElementById('cartConfirmBtn');
-        const cartModalOverlay = document.getElementById('cartModalOverlay');
+        const cartBackBtn = document.getElementById('cartBackBtn');
+        const cartPaymentBtn = document.getElementById('cartPaymentBtn');
+        const paymentSuccessBtn = document.getElementById('paymentSuccessBtn');
 
         if (cartButton) {
-            cartButton.addEventListener('click', () => this.openCartModal());
+            cartButton.addEventListener('click', () => this.openCartView());
         }
-        if (cartCloseBtn) {
-            cartCloseBtn.addEventListener('click', () => this.closeCartModal());
+        if (cartBackBtn) {
+            cartBackBtn.addEventListener('click', () => this.closeCartView());
         }
-        if (cartConfirmBtn) {
-            cartConfirmBtn.addEventListener('click', () => this.closeCartModal());
+        if (cartPaymentBtn) {
+            cartPaymentBtn.addEventListener('click', () => this.handlePayment());
         }
-        if (cartModalOverlay) {
-            cartModalOverlay.addEventListener('click', (e) => {
-                if (e.target === cartModalOverlay) {
-                    this.closeCartModal();
-                }
-            });
+        if (paymentSuccessBtn) {
+            paymentSuccessBtn.addEventListener('click', () => this.closePaymentSuccessModal());
         }
     }
 
@@ -1443,18 +1439,18 @@ class DDayManager {
 
     // ==================== Cart Functions ====================
 
-    openCartModal() {
-        const cartModalOverlay = document.getElementById('cartModalOverlay');
-        if (cartModalOverlay) {
-            cartModalOverlay.classList.add('active');
+    openCartView() {
+        const cartView = document.getElementById('cartView');
+        if (cartView) {
+            cartView.classList.add('active');
             this.renderCartItems();
         }
     }
 
-    closeCartModal() {
-        const cartModalOverlay = document.getElementById('cartModalOverlay');
-        if (cartModalOverlay) {
-            cartModalOverlay.classList.remove('active');
+    closeCartView() {
+        const cartView = document.getElementById('cartView');
+        if (cartView) {
+            cartView.classList.remove('active');
         }
     }
 
@@ -1470,7 +1466,8 @@ class DDayManager {
             imageData: this.currentImageData,
             timestamp: timestamp,
             selected: true,
-            textbookName: this.textbookName
+            textbookName: this.textbookName,
+            price: 50 // ₩50 per item
         };
 
         this.cartItems.push(cartItem);
@@ -1504,20 +1501,28 @@ class DDayManager {
     renderCartItems() {
         const cartItemsList = document.getElementById('cartItemsList');
         const cartEmptyState = document.getElementById('cartEmptyState');
+        const cartItemsSection = document.getElementById('cartItemsSection');
+        const cartFooter = document.getElementById('cartFooter');
 
         if (!cartItemsList || !cartEmptyState) return;
 
         if (this.cartItems.length === 0) {
-            cartEmptyState.classList.remove('hidden');
+            cartEmptyState.style.display = 'flex';
+            if (cartItemsSection) cartItemsSection.style.display = 'none';
+            if (cartFooter) cartFooter.style.display = 'none';
             cartItemsList.innerHTML = '';
             return;
         }
 
-        cartEmptyState.classList.add('hidden');
+        cartEmptyState.style.display = 'none';
+        if (cartItemsSection) cartItemsSection.style.display = 'block';
+        if (cartFooter) cartFooter.style.display = 'flex';
         
         cartItemsList.innerHTML = this.cartItems.map(item => {
             const date = new Date(item.timestamp);
             const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+            const price = item.price || 50;
+            const formattedPrice = `₩${price.toLocaleString()}`;
             
             return `
                 <div class="cart-item ${item.selected ? 'selected' : ''}">
@@ -1532,6 +1537,7 @@ class DDayManager {
                         <div class="cart-item-title">${item.textbookName}</div>
                         <div class="cart-item-date">${formattedDate}</div>
                     </div>
+                    <div class="cart-item-price">${formattedPrice}</div>
                     <button class="cart-item-remove" data-item-id="${item.id}">×</button>
                 </div>
             `;
@@ -1553,6 +1559,9 @@ class DDayManager {
                 this.removeFromCart(itemId);
             });
         });
+
+        // Update price summary
+        this.updatePriceSummary();
     }
 
     updateCartBadge() {
@@ -1573,6 +1582,98 @@ class DDayManager {
 
     saveCart() {
         localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+    }
+
+    updatePriceSummary() {
+        const selectedItems = this.cartItems.filter(item => item.selected);
+        const subtotal = selectedItems.reduce((sum, item) => sum + (item.price || 50), 0);
+        const discount = 0; // Can be customized later
+        const total = subtotal - discount;
+
+        // Update subtotal
+        const subtotalElement = document.getElementById('cartSubtotal');
+        if (subtotalElement) {
+            subtotalElement.textContent = `₩${subtotal.toLocaleString()}`;
+        }
+
+        // Update discount
+        const discountElement = document.getElementById('cartDiscount');
+        if (discountElement) {
+            discountElement.textContent = `-₩${discount.toLocaleString()}`;
+        }
+
+        // Update total
+        const totalElement = document.getElementById('cartTotal');
+        if (totalElement) {
+            totalElement.textContent = `₩${total.toLocaleString()}`;
+        }
+
+        // Update payment button
+        const paymentBtnText = document.getElementById('cartPaymentBtnText');
+        if (paymentBtnText) {
+            paymentBtnText.textContent = `₩${total.toLocaleString()} 결제하기`;
+        }
+
+        // Disable payment button if no items selected
+        const paymentBtn = document.getElementById('cartPaymentBtn');
+        if (paymentBtn) {
+            paymentBtn.disabled = selectedItems.length === 0;
+        }
+    }
+
+    handlePayment() {
+        const selectedItems = this.cartItems.filter(item => item.selected);
+        const emailInput = document.getElementById('cartEmailInput');
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
+
+        if (selectedItems.length === 0) {
+            this.showToast('선택된 상품이 없습니다', 'error');
+            return;
+        }
+
+        if (!emailInput || !emailInput.value.trim()) {
+            this.showToast('이메일을 입력해주세요', 'error');
+            return;
+        }
+
+        if (!selectedPaymentMethod) {
+            this.showToast('결제 수단을 선택해주세요', 'error');
+            return;
+        }
+
+        const total = selectedItems.reduce((sum, item) => sum + (item.price || 50), 0);
+        const email = emailInput.value.trim();
+        const paymentMethod = selectedPaymentMethod.value;
+
+        console.log('💳 Processing payment:', {
+            items: selectedItems.length,
+            total: total,
+            email: email,
+            paymentMethod: paymentMethod
+        });
+
+        // Show payment success modal
+        this.showPaymentSuccessModal();
+    }
+
+    showPaymentSuccessModal() {
+        const modal = document.getElementById('paymentSuccessModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    closePaymentSuccessModal() {
+        const modal = document.getElementById('paymentSuccessModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+
+        // Clear selected items from cart after successful payment
+        this.cartItems = this.cartItems.filter(item => !item.selected);
+        this.saveCart();
+        this.updateCartBadge();
+        this.closeCartView();
     }
 
     showToast(message, type = 'info') {
