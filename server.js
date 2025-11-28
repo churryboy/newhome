@@ -4,6 +4,7 @@
 const express = require('express');
 const cors = require('cors');
 const fetch = require('node-fetch');
+const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
@@ -239,6 +240,85 @@ app.post('/api/solve-problem', async (req, res) => {
         console.error('Server Error:', error);
         res.status(500).json({ 
             error: error.message || 'Internal server error' 
+        });
+    }
+});
+
+// Email notification endpoint
+app.post('/api/send-notification', async (req, res) => {
+    try {
+        const { userEmail, itemCount, total } = req.body;
+
+        console.log('📧 Sending notification email to dino.lee@mathpresso.com');
+        console.log('User Email:', userEmail);
+        console.log('Items:', itemCount);
+        console.log('Total:', total);
+
+        const emailBody = `
+New purchase notification:
+========================
+User Email: ${userEmail}
+Number of Items: ${itemCount}
+Total Amount: ₩${total}
+========================
+        `;
+
+        console.log('Email Body:', emailBody);
+
+        // Check if email credentials are configured
+        if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+            console.warn('⚠️  Email credentials not configured. Skipping email send.');
+            console.log('ℹ️  To enable email notifications, set EMAIL_USER and EMAIL_PASS in .env file');
+            res.json({ 
+                success: true,
+                message: 'Notification logged (email credentials not configured)'
+            });
+            return;
+        }
+
+        // Create transporter with Gmail SMTP
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS  // Use App Password, not regular password
+            }
+        });
+
+        // Send email to dino.lee@mathpresso.com
+        const info = await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: 'dino.lee@mathpresso.com',
+            subject: '🛒 New Purchase Notification - 콴다',
+            text: emailBody,
+            html: `
+                <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f5f5f5;">
+                    <div style="background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h2 style="color: #6366F1; margin-bottom: 20px;">🛒 New Purchase Notification</h2>
+                        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 4px; margin-bottom: 20px;">
+                            <p style="margin: 10px 0;"><strong>User Email:</strong> ${userEmail}</p>
+                            <p style="margin: 10px 0;"><strong>Number of Items:</strong> ${itemCount}</p>
+                            <p style="margin: 10px 0;"><strong>Total Amount:</strong> ₩${total}</p>
+                        </div>
+                        <p style="color: #666; font-size: 14px; margin-top: 30px;">
+                            This is an automated notification from the 콴다 shopping cart system.
+                        </p>
+                    </div>
+                </div>
+            `
+        });
+
+        console.log('✅ Email sent successfully! Message ID:', info.messageId);
+
+        res.json({ 
+            success: true,
+            message: 'Notification email sent successfully',
+            messageId: info.messageId
+        });
+    } catch (error) {
+        console.error('❌ Error sending notification email:', error);
+        res.status(500).json({ 
+            error: error.message || 'Failed to send notification' 
         });
     }
 });

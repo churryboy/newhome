@@ -41,6 +41,7 @@ class DDayManager {
         this.setYesterdayStudyTime();
         this.checkServerConnection();
         this.animateMinjiStatus();
+        this.updateCartBadge(); // Initialize cart badge on page load
     }
 
     animateMinjiStatus() {
@@ -1475,6 +1476,9 @@ class DDayManager {
         this.updateCartBadge();
 
         console.log('✅ Item added to cart:', cartItem.id);
+        
+        // Show immediate feedback
+        this.showToast('장바구니에 추가되었습니다', 'success');
 
         // Show feedback to user
         this.showToast('장바구니에 추가되었습니다', 'success');
@@ -1572,11 +1576,21 @@ class DDayManager {
             
             if (count === 0) {
                 cartBadge.style.display = 'none';
+                cartBadge.style.visibility = 'hidden';
             } else {
                 cartBadge.style.display = 'inline-block';
+                cartBadge.style.visibility = 'visible';
+                cartBadge.style.opacity = '1';
             }
             
-            console.log('✅ Cart badge updated:', count);
+            console.log('✅ Cart badge updated:', {
+                count: count,
+                display: cartBadge.style.display,
+                visibility: cartBadge.style.visibility,
+                textContent: cartBadge.textContent
+            });
+        } else {
+            console.error('❌ Cart badge element not found');
         }
     }
 
@@ -1621,7 +1635,7 @@ class DDayManager {
         }
     }
 
-    handlePayment() {
+    async handlePayment() {
         const selectedItems = this.cartItems.filter(item => item.selected);
         const emailInput = document.getElementById('cartEmailInput');
         const selectedPaymentMethod = document.querySelector('input[name="paymentMethod"]:checked');
@@ -1652,8 +1666,41 @@ class DDayManager {
             paymentMethod: paymentMethod
         });
 
+        // Send notification email to dino.lee@mathpresso.com
+        try {
+            await this.sendNotificationEmail(email, selectedItems, total);
+        } catch (error) {
+            console.error('❌ Failed to send notification email:', error);
+            // Continue with payment even if email fails
+        }
+
         // Show payment success modal
         this.showPaymentSuccessModal();
+    }
+
+    async sendNotificationEmail(userEmail, items, total) {
+        try {
+            const response = await fetch('/api/send-notification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userEmail: userEmail,
+                    itemCount: items.length,
+                    total: total
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to send notification email');
+            }
+
+            console.log('✅ Notification email sent to dino.lee@mathpresso.com');
+        } catch (error) {
+            console.error('❌ Error sending notification email:', error);
+            throw error;
+        }
     }
 
     showPaymentSuccessModal() {
