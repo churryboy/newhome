@@ -1551,6 +1551,9 @@ class DDayManager {
             const price = item.price || 50;
             const formattedPrice = `₩${price.toLocaleString()}`;
             
+            // Use placeholder if imageData not available (after page refresh)
+            const imageSrc = item.imageData || 'image/camera-icon.png';
+            
             return `
                 <div class="cart-item ${item.selected ? 'selected' : ''}">
                     <input 
@@ -1559,7 +1562,7 @@ class DDayManager {
                         ${item.selected ? 'checked' : ''}
                         data-item-id="${item.id}"
                     >
-                    <img src="${item.imageData}" alt="문제 이미지" class="cart-item-image">
+                    <img src="${imageSrc}" alt="문제 이미지" class="cart-item-image">
                     <div class="cart-item-info">
                         <div class="cart-item-title">${item.textbookName}</div>
                         <div class="cart-item-date">${formattedDate}</div>
@@ -1618,7 +1621,17 @@ class DDayManager {
     }
 
     saveCart() {
-        localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+        // Don't store imageData in localStorage (causes quota exceeded)
+        // Images are already sent to Google Sheets
+        const cartItemsWithoutImages = this.cartItems.map(item => ({
+            id: item.id,
+            timestamp: item.timestamp,
+            selected: item.selected,
+            textbookName: item.textbookName,
+            price: item.price
+            // imageData excluded to save storage space
+        }));
+        localStorage.setItem('cartItems', JSON.stringify(cartItemsWithoutImages));
     }
 
     updatePriceSummary() {
