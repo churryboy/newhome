@@ -3026,28 +3026,6 @@ body {
     color: white;
     font-size: 16px;
     font-weight: 700;
-    margin-bottom: 4px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.premium-subtitle {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 13px;
-    font-weight: 500;
-}
-
-.premium-arrow {
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    animation: bounce 2s ease-in-out infinite;
-}
-
-@keyframes bounce {
-    0%, 100% {
-        transform: translateX(0);
-    }
-    50% {
-        transform: translateX(4px);
-    }
+    line-height: 1.4;
 }
