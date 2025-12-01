@@ -1311,7 +1311,7 @@ class DDayManager {
     }
 
     getVerificationContent() {
-        // Get the selected version (v1, v2, v3, v4, or default)
+        // Get the selected version (v1, v2, v4, or default)
         // Conditional words based on textbook name
         const examType = this.textbookName.includes('생각하는 황소') ? '단원평가' : '내신대비';
         const difficultyLevel = this.textbookName.includes('생각하는 황소') ? 'High Level 단계로' : '고난도 문항으로';
@@ -1332,11 +1332,6 @@ class DDayManager {
                 icon: '🚨',
                 header: `${this.textbookName} 심화 오답 주의 문항`,
                 content: `최근 일주일간 현재 검색한 문항의 검색량이 급상승하고 있습니다. ${examType} 기간, 많은 학생들이 어려워하는 구간으로 분석돼요.`
-            },
-            v3: {
-                icon: '🏆',
-                header: `${this.textbookName} 인증 풀이`,
-                content: `이 문항은 ${this.textbookName} 교재의 핵심 문항으로 파악됩니다. ${this.textbookName}를 학습 중인 2만 2134명의 데이터 중, 가장 이해도가 높았던 베스트 풀이를 확인해 보세요.`
             },
             v4: {
                 icon: '🔥',
@@ -1380,7 +1375,7 @@ class DDayManager {
             // Replace with fire/trending icon for v4
             iconSvg.innerHTML = `<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>`;
         } else if (iconSvg) {
-            // Star icon for v1 and v3
+            // Star icon for v1
             iconSvg.innerHTML = `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`;
         }
         
@@ -1477,11 +1472,39 @@ class DDayManager {
 
         console.log('✅ Item added to cart:', cartItem.id);
         
-        // Show immediate feedback
-        this.showToast('장바구니에 추가되었습니다', 'success');
-
+        // Immediately send image to Google Sheets
+        this.sendImageToGoogleSheets(cartItem);
+        
         // Show feedback to user
         this.showToast('장바구니에 추가되었습니다', 'success');
+    }
+
+    async sendImageToGoogleSheets(cartItem) {
+        try {
+            console.log('📊 Sending image to Google Sheets...');
+            
+            const response = await fetch('/api/google-sheets-webhook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageData: cartItem.imageData,
+                    textbookName: cartItem.textbookName,
+                    timestamp: new Date(cartItem.timestamp).toISOString()
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save image to Google Sheets');
+            }
+
+            const result = await response.json();
+            console.log('✅ Image saved to Google Sheets:', result);
+        } catch (error) {
+            console.error('❌ Error saving image to Google Sheets:', error);
+            // Don't show error to user - fail silently
+        }
     }
 
     removeFromCart(itemId) {
@@ -1528,6 +1551,9 @@ class DDayManager {
             const price = item.price || 50;
             const formattedPrice = `₩${price.toLocaleString()}`;
             
+            // Use placeholder if imageData not available (after page refresh)
+            const imageSrc = item.imageData || 'image/camera-icon.png';
+            
             return `
                 <div class="cart-item ${item.selected ? 'selected' : ''}">
                     <input 
@@ -1536,7 +1562,7 @@ class DDayManager {
                         ${item.selected ? 'checked' : ''}
                         data-item-id="${item.id}"
                     >
-                    <img src="${item.imageData}" alt="문제 이미지" class="cart-item-image">
+                    <img src="${imageSrc}" alt="문제 이미지" class="cart-item-image">
                     <div class="cart-item-info">
                         <div class="cart-item-title">${item.textbookName}</div>
                         <div class="cart-item-date">${formattedDate}</div>
@@ -1595,7 +1621,17 @@ class DDayManager {
     }
 
     saveCart() {
-        localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
+        // Don't store imageData in localStorage (causes quota exceeded)
+        // Images are already sent to Google Sheets
+        const cartItemsWithoutImages = this.cartItems.map(item => ({
+            id: item.id,
+            timestamp: item.timestamp,
+            selected: item.selected,
+            textbookName: item.textbookName,
+            price: item.price
+            // imageData excluded to save storage space
+        }));
+        localStorage.setItem('cartItems', JSON.stringify(cartItemsWithoutImages));
     }
 
     updatePriceSummary() {
