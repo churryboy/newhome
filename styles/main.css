@@ -1549,6 +1549,8 @@ body {
     cursor: default !important;
     justify-content: space-between !important;
     gap: var(--space-base) !important;
+    flex: 0 0 50% !important;
+    max-width: 50%;
 }
 
 .camera-widget:active {
