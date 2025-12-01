@@ -192,6 +192,12 @@ class DDayManager {
         if (paymentSuccessBtn) {
             paymentSuccessBtn.addEventListener('click', () => this.closePaymentSuccessModal());
         }
+
+        // Premium Banner
+        const premiumBanner = document.getElementById('premiumBanner');
+        if (premiumBanner) {
+            premiumBanner.addEventListener('click', () => this.showPremiumComingSoon());
+        }
     }
 
     async checkServerConnection() {
@@ -1776,6 +1782,10 @@ class DDayManager {
                 document.body.removeChild(toast);
             }, 300);
         }, 2000);
+    }
+
+    showPremiumComingSoon() {
+        this.showToast('현재 준비 중입니다', 'info');
     }
 }
 
