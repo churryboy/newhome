@@ -1607,6 +1607,7 @@ body {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     height: 200px;
+    aspect-ratio: 1 / 1;
 }
 
 .camera-preview::-webkit-scrollbar {
