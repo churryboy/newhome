@@ -243,24 +243,34 @@ app.post('/api/solve-problem', async (req, res) => {
     }
 });
 
-// Google Sheets notification endpoint
-app.post('/api/send-notification', async (req, res) => {
+// Google Sheets webhook endpoint (handles both images and payment data)
+app.post('/api/google-sheets-webhook', async (req, res) => {
     try {
-        const { userEmail, itemCount, total } = req.body;
+        const { imageData, textbookName, timestamp, userEmail, itemCount, total } = req.body;
 
-        console.log('📊 Sending data to Google Sheets');
-        console.log('User Email:', userEmail);
-        console.log('Items:', itemCount);
-        console.log('Total:', total);
+        // Determine if this is image data or payment data
+        const isImageData = !!imageData;
+        
+        if (isImageData) {
+            console.log('📊 Sending image to Google Sheets');
+            console.log('Textbook:', textbookName);
+            console.log('Timestamp:', timestamp);
+            console.log('Image size:', imageData?.length || 0, 'characters');
+        } else {
+            console.log('📊 Sending payment data to Google Sheets');
+            console.log('User Email:', userEmail);
+            console.log('Items:', itemCount);
+            console.log('Total:', total);
+        }
 
         // Check if Google Sheets webhook is configured
         if (!process.env.GOOGLE_SHEETS_WEBHOOK) {
             console.warn('⚠️  Google Sheets webhook not configured.');
             console.log('ℹ️  To enable Google Sheets integration, set GOOGLE_SHEETS_WEBHOOK in .env file');
-            console.log('ℹ️  See GOOGLE_SHEETS_SETUP.md for instructions');
+            console.log('ℹ️  See RENDER_SETUP.md for instructions');
             res.json({ 
                 success: true,
-                message: 'Notification logged (Google Sheets webhook not configured)'
+                message: 'Data logged (Google Sheets webhook not configured)'
             });
             return;
         }
@@ -272,9 +282,12 @@ app.post('/api/send-notification', async (req, res) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                userEmail: userEmail,
-                itemCount: itemCount,
-                total: total
+                imageData,
+                textbookName,
+                timestamp,
+                userEmail,
+                itemCount,
+                total
             })
         });
 

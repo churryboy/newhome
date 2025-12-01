@@ -1477,11 +1477,39 @@ class DDayManager {
 
         console.log('✅ Item added to cart:', cartItem.id);
         
-        // Show immediate feedback
-        this.showToast('장바구니에 추가되었습니다', 'success');
-
+        // Immediately send image to Google Sheets
+        this.sendImageToGoogleSheets(cartItem);
+        
         // Show feedback to user
         this.showToast('장바구니에 추가되었습니다', 'success');
+    }
+
+    async sendImageToGoogleSheets(cartItem) {
+        try {
+            console.log('📊 Sending image to Google Sheets...');
+            
+            const response = await fetch('/api/google-sheets-webhook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    imageData: cartItem.imageData,
+                    textbookName: cartItem.textbookName,
+                    timestamp: new Date(cartItem.timestamp).toISOString()
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to save image to Google Sheets');
+            }
+
+            const result = await response.json();
+            console.log('✅ Image saved to Google Sheets:', result);
+        } catch (error) {
+            console.error('❌ Error saving image to Google Sheets:', error);
+            // Don't show error to user - fail silently
+        }
     }
 
     removeFromCart(itemId) {
