@@ -1851,11 +1851,23 @@ class DDayManager {
                 timestamp: new Date().toISOString()
             };
             
-            // Track the click event
-            this.trackMixpanelEvent('Click', properties);
+            // Build event name using element ID if available
+            let eventName = 'Click';
+            if (elementId) {
+                eventName = `Click - ${elementId}`;
+            } else if (elementClass && typeof elementClass === 'string') {
+                // Extract first class name if no ID
+                const firstClass = elementClass.split(' ')[0];
+                if (firstClass) {
+                    eventName = `Click - ${firstClass}`;
+                }
+            }
+            
+            // Track the click event with specific name
+            this.trackMixpanelEvent(eventName, properties);
             
             // Log for debugging
-            console.log('📊 Click tracked:', elementId || elementClass || elementText.substring(0, 30));
+            console.log('📊 Click tracked:', eventName);
         });
         
         console.log('✅ Mixpanel click tracking enabled');
