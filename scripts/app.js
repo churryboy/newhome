@@ -1460,6 +1460,8 @@ class DDayManager {
     addToCart() {
         if (!this.currentImageData) {
             console.warn('⚠️ No image data to add to cart');
+            console.warn('currentImageData is:', this.currentImageData);
+            this.showToast('이미지 데이터가 없습니다', 'error');
             return;
         }
 
@@ -1473,6 +1475,14 @@ class DDayManager {
             price: 50 // ₩50 per item
         };
 
+        console.log('📦 Adding item to cart:', {
+            id: cartItem.id,
+            hasImageData: !!cartItem.imageData,
+            imageDataLength: cartItem.imageData?.length || 0,
+            textbookName: cartItem.textbookName,
+            timestamp: new Date(cartItem.timestamp).toISOString()
+        });
+
         this.cartItems.push(cartItem);
         this.saveCart();
         this.updateCartBadge();
@@ -1480,6 +1490,7 @@ class DDayManager {
         console.log('✅ Item added to cart:', cartItem.id);
         
         // Immediately send image to Google Sheets
+        console.log('🚀 About to send image to Google Sheets...');
         this.sendImageToGoogleSheets(cartItem);
         
         // Show feedback to user
@@ -1493,19 +1504,34 @@ class DDayManager {
             console.log('Timestamp:', cartItem.timestamp);
             console.log('Image data length:', cartItem.imageData?.length || 0);
             
+            if (!cartItem.imageData) {
+                console.error('❌ No imageData in cartItem!');
+                console.error('cartItem:', cartItem);
+                this.showToast('이미지 데이터가 없습니다', 'error');
+                return;
+            }
+            
             const url = `${this.apiUrl}/google-sheets-webhook`;
             console.log('API URL:', url);
+            
+            const payload = {
+                imageData: cartItem.imageData,
+                textbookName: cartItem.textbookName,
+                timestamp: new Date(cartItem.timestamp).toISOString()
+            };
+            console.log('📤 Payload:', {
+                hasImageData: !!payload.imageData,
+                imageDataLength: payload.imageData?.length || 0,
+                textbookName: payload.textbookName,
+                timestamp: payload.timestamp
+            });
             
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    imageData: cartItem.imageData,
-                    textbookName: cartItem.textbookName,
-                    timestamp: new Date(cartItem.timestamp).toISOString()
-                })
+                body: JSON.stringify(payload)
             });
 
             console.log('Response status:', response.status);
@@ -1518,10 +1544,12 @@ class DDayManager {
 
             const result = await response.json();
             console.log('✅ Image saved to Google Sheets:', result);
+            this.showToast('이미지가 저장되었습니다', 'success');
         } catch (error) {
             console.error('❌ Error saving image to Google Sheets:', error);
             console.error('Error details:', error.message);
-            // Don't show error to user - fail silently
+            console.error('Error stack:', error.stack);
+            this.showToast('이미지 저장 실패: ' + error.message, 'error');
         }
     }
 
