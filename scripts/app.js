@@ -42,6 +42,7 @@ class DDayManager {
         this.checkServerConnection();
         this.animateMinjiStatus();
         this.updateCartBadge(); // Initialize cart badge on page load
+        this.initMixpanel(); // Initialize analytics tracking
     }
 
     animateMinjiStatus() {
@@ -1710,7 +1711,7 @@ class DDayManager {
 
         // Save data to Google Sheets
         try {
-            await this.sendDataToGoogleSheets(email, selectedItems.length, total);
+            await this.sendNotificationEmail(email, selectedItems, total);
         } catch (error) {
             console.error('❌ Failed to save to Google Sheets:', error);
             // Continue with payment even if Google Sheets fails
@@ -1720,16 +1721,16 @@ class DDayManager {
         this.showPaymentSuccessModal();
     }
 
-    async sendDataToGoogleSheets(userEmail, itemCount, total) {
+    async sendNotificationEmail(userEmail, items, total) {
         try {
-            const response = await fetch('/api/google-sheets-webhook', {
+            const response = await fetch('/api/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     userEmail: userEmail,
-                    itemCount: itemCount,
+                    itemCount: items.length,
                     total: total
                 })
             });
@@ -1786,6 +1787,105 @@ class DDayManager {
 
     showPremiumComingSoon() {
         this.showToast('현재 준비 중입니다', 'info');
+    }
+
+    async initMixpanel() {
+        try {
+            // Get Mixpanel token from server
+            const response = await fetch(`${this.apiUrl}/config/mixpanel`);
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.token) {
+                    // Initialize Mixpanel
+                    mixpanel.init(data.token, {
+                        debug: false,
+                        track_pageview: true,
+                        persistence: 'localStorage',
+                        ignore_dnt: true
+                    });
+                    
+                    console.log('✅ Mixpanel analytics initialized');
+                    
+                    // Setup automatic click tracking
+                    this.setupMixpanelClickTracking();
+                    
+                    // Track initial page view
+                    this.trackMixpanelEvent('Page View', {
+                        page: 'Home',
+                        url: window.location.href
+                    });
+                } else {
+                    console.warn('⚠️  Mixpanel not configured');
+                }
+            }
+        } catch (error) {
+            console.error('❌ Failed to initialize Mixpanel:', error);
+        }
+    }
+
+    setupMixpanelClickTracking() {
+        // Track all clicks automatically
+        document.addEventListener('click', (e) => {
+            const element = e.target;
+            const tagName = element.tagName?.toLowerCase() || '';
+            
+            // Get element identifiers
+            const elementId = element.id || '';
+            const elementClass = element.className || '';
+            const elementText = element.textContent?.trim().substring(0, 100) || '';
+            
+            // Get parent info for context
+            const parentId = element.parentElement?.id || '';
+            const parentClass = element.parentElement?.className || '';
+            
+            // Build event properties
+            const properties = {
+                element_tag: tagName,
+                element_id: elementId,
+                element_class: typeof elementClass === 'string' ? elementClass : elementClass.toString(),
+                element_text: elementText,
+                parent_id: parentId,
+                parent_class: typeof parentClass === 'string' ? parentClass : parentClass.toString(),
+                page_url: window.location.pathname,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Build event name using element ID if available
+            let eventName = 'Click';
+            if (elementId) {
+                eventName = `Click - ${elementId}`;
+            } else if (elementClass && typeof elementClass === 'string') {
+                // Extract first class name if no ID
+                const firstClass = elementClass.split(' ')[0];
+                if (firstClass) {
+                    eventName = `Click - ${firstClass}`;
+                }
+            }
+            
+            // Track the click event with specific name
+            this.trackMixpanelEvent(eventName, properties);
+            
+            // Log for debugging
+            console.log('📊 Click tracked:', eventName);
+        });
+        
+        console.log('✅ Mixpanel click tracking enabled');
+    }
+
+    trackMixpanelEvent(eventName, properties = {}) {
+        try {
+            if (typeof mixpanel !== 'undefined' && mixpanel.track) {
+                mixpanel.track(eventName, {
+                    ...properties,
+                    app_version: '1.0.0',
+                    platform: 'web',
+                    user_agent: navigator.userAgent
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error tracking event:', error);
+        }
     }
 }
 

@@ -243,6 +243,28 @@ app.post('/api/solve-problem', async (req, res) => {
     }
 });
 
+// Mixpanel Configuration endpoint
+app.get('/api/config/mixpanel', async (req, res) => {
+    try {
+        const mixpanelToken = process.env.MIXPANEL_TOKEN;
+        
+        if (!mixpanelToken) {
+            console.warn('⚠️  MIXPANEL_TOKEN not found in environment variables');
+            return res.json({ token: null });
+        }
+
+        res.json({ 
+            token: mixpanelToken,
+            configured: true
+        });
+    } catch (error) {
+        console.error('Server Error:', error);
+        res.status(500).json({ 
+            error: error.message || 'Internal server error' 
+        });
+    }
+});
+
 // Google Sheets webhook endpoint (handles both images and payment data)
 app.post('/api/google-sheets-webhook', async (req, res) => {
     try {

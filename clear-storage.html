@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear Storage</title>
+</head>
+<body>
+    <h1>Clearing localStorage...</h1>
+    <script>
+        localStorage.removeItem('cartItems');
+        document.body.innerHTML += '<p style="color: green;">✅ Cart storage cleared! You can close this tab.</p>';
+        console.log('✅ localStorage cleared');
+    </script>
+</body>
+</html>
