@@ -42,6 +42,7 @@ class DDayManager {
         this.checkServerConnection();
         this.animateMinjiStatus();
         this.updateCartBadge(); // Initialize cart badge on page load
+        this.initMixpanel(); // Initialize analytics tracking
     }
 
     animateMinjiStatus() {
@@ -1786,6 +1787,93 @@ class DDayManager {
 
     showPremiumComingSoon() {
         this.showToast('현재 준비 중입니다', 'info');
+    }
+
+    async initMixpanel() {
+        try {
+            // Get Mixpanel token from server
+            const response = await fetch(`${this.apiUrl}/config/mixpanel`);
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.token) {
+                    // Initialize Mixpanel
+                    mixpanel.init(data.token, {
+                        debug: false,
+                        track_pageview: true,
+                        persistence: 'localStorage',
+                        ignore_dnt: true
+                    });
+                    
+                    console.log('✅ Mixpanel analytics initialized');
+                    
+                    // Setup automatic click tracking
+                    this.setupMixpanelClickTracking();
+                    
+                    // Track initial page view
+                    this.trackMixpanelEvent('Page View', {
+                        page: 'Home',
+                        url: window.location.href
+                    });
+                } else {
+                    console.warn('⚠️  Mixpanel not configured');
+                }
+            }
+        } catch (error) {
+            console.error('❌ Failed to initialize Mixpanel:', error);
+        }
+    }
+
+    setupMixpanelClickTracking() {
+        // Track all clicks automatically
+        document.addEventListener('click', (e) => {
+            const element = e.target;
+            const tagName = element.tagName?.toLowerCase() || '';
+            
+            // Get element identifiers
+            const elementId = element.id || '';
+            const elementClass = element.className || '';
+            const elementText = element.textContent?.trim().substring(0, 100) || '';
+            
+            // Get parent info for context
+            const parentId = element.parentElement?.id || '';
+            const parentClass = element.parentElement?.className || '';
+            
+            // Build event properties
+            const properties = {
+                element_tag: tagName,
+                element_id: elementId,
+                element_class: typeof elementClass === 'string' ? elementClass : elementClass.toString(),
+                element_text: elementText,
+                parent_id: parentId,
+                parent_class: typeof parentClass === 'string' ? parentClass : parentClass.toString(),
+                page_url: window.location.pathname,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Track the click event
+            this.trackMixpanelEvent('Click', properties);
+            
+            // Log for debugging
+            console.log('📊 Click tracked:', elementId || elementClass || elementText.substring(0, 30));
+        });
+        
+        console.log('✅ Mixpanel click tracking enabled');
+    }
+
+    trackMixpanelEvent(eventName, properties = {}) {
+        try {
+            if (typeof mixpanel !== 'undefined' && mixpanel.track) {
+                mixpanel.track(eventName, {
+                    ...properties,
+                    app_version: '1.0.0',
+                    platform: 'web',
+                    user_agent: navigator.userAgent
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error tracking event:', error);
+        }
     }
 }
 
