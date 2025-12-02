@@ -1489,8 +1489,14 @@ class DDayManager {
     async sendImageToGoogleSheets(cartItem) {
         try {
             console.log('📊 Sending image to Google Sheets...');
+            console.log('Textbook:', cartItem.textbookName);
+            console.log('Timestamp:', cartItem.timestamp);
+            console.log('Image data length:', cartItem.imageData?.length || 0);
             
-            const response = await fetch('/api/google-sheets-webhook', {
+            const url = `${this.apiUrl}/google-sheets-webhook`;
+            console.log('API URL:', url);
+            
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1502,14 +1508,19 @@ class DDayManager {
                 })
             });
 
+            console.log('Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Failed to save image to Google Sheets');
+                const errorText = await response.text();
+                console.error('Server error response:', errorText);
+                throw new Error(`Failed to save image: ${response.status} ${errorText}`);
             }
 
             const result = await response.json();
             console.log('✅ Image saved to Google Sheets:', result);
         } catch (error) {
             console.error('❌ Error saving image to Google Sheets:', error);
+            console.error('Error details:', error.message);
             // Don't show error to user - fail silently
         }
     }
@@ -1723,7 +1734,15 @@ class DDayManager {
 
     async sendNotificationEmail(userEmail, items, total) {
         try {
-            const response = await fetch('/api/send-notification', {
+            console.log('📧 Sending payment data to Google Sheets...');
+            console.log('User Email:', userEmail);
+            console.log('Item Count:', items.length);
+            console.log('Total:', total);
+            
+            const url = `${this.apiUrl}/google-sheets-webhook`;
+            console.log('API URL:', url);
+            
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1735,12 +1754,16 @@ class DDayManager {
                 })
             });
 
+            console.log('Response status:', response.status);
+
             if (!response.ok) {
-                throw new Error('Failed to save data to Google Sheets');
+                const errorText = await response.text();
+                console.error('Server error response:', errorText);
+                throw new Error(`Failed to save payment data: ${response.status} ${errorText}`);
             }
 
             const result = await response.json();
-            console.log('✅ Data saved to Google Sheets successfully:', result);
+            console.log('✅ Payment data saved to Google Sheets successfully:', result);
         } catch (error) {
             console.error('❌ Error saving data to Google Sheets:', error);
             throw error;
@@ -1799,34 +1822,69 @@ class DDayManager {
                 return;
             }
 
-            console.log('🔍 Device info:', {
+            const deviceInfo = {
                 userAgent: navigator.userAgent,
                 isMobile: /Mobile|Android|iPhone/i.test(navigator.userAgent),
-                platform: navigator.platform
-            });
+                platform: navigator.platform,
+                online: navigator.onLine,
+                url: window.location.href,
+                hostname: window.location.hostname
+            };
+            console.log('🔍 Device info:', deviceInfo);
 
             // Get Mixpanel token from server
-            const response = await fetch(`${this.apiUrl}/config/mixpanel`);
-            console.log('📡 Mixpanel config response:', response.status);
+            const mixpanelUrl = `${this.apiUrl}/config/mixpanel`;
+            console.log('📡 Fetching Mixpanel config from:', mixpanelUrl);
+            console.log('Base API URL:', this.apiUrl);
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
+            const response = await fetch(mixpanelUrl, {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            clearTimeout(timeoutId);
+            
+            console.log('📡 Mixpanel config response status:', response.status);
+            console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
             
             if (response.ok) {
-                const data = await response.json();
-                console.log('📊 Mixpanel config data:', data);
+                const responseText = await response.text();
+                console.log('📡 Raw response:', responseText);
+                
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                    console.log('📊 Mixpanel config data:', data);
+                } catch (e) {
+                    console.error('❌ Failed to parse Mixpanel config JSON:', e);
+                    console.error('Response text:', responseText);
+                    throw new Error('Invalid JSON response from server');
+                }
                 
                 if (data.token) {
+                    console.log('🔑 Mixpanel token received, initializing...');
+                    
                     // Initialize Mixpanel
                     mixpanel.init(data.token, {
                         debug: true, // Enable debug mode to see what's happening
-                        track_pageview: true,
+                        track_pageview: false, // We'll track manually
                         persistence: 'localStorage',
                         ignore_dnt: true,
                         api_host: 'https://api.mixpanel.com', // Explicit HTTPS
-                        loaded: function(mixpanel) {
+                        loaded: function(mp) {
                             console.log('✅ Mixpanel SDK fully loaded and initialized');
+                            console.log('Mixpanel instance:', mp);
                         }
                     });
                     
-                    console.log('✅ Mixpanel analytics initialized');
+                    console.log('✅ Mixpanel.init() called successfully');
+                    
+                    // Wait a bit for Mixpanel to fully initialize
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     
                     // Setup automatic click tracking
                     this.setupMixpanelClickTracking();
@@ -1835,20 +1893,27 @@ class DDayManager {
                     this.trackMixpanelEvent('Page View', {
                         page: 'Home',
                         url: window.location.href,
-                        device_type: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
+                        device_type: deviceInfo.isMobile ? 'mobile' : 'desktop',
+                        ...deviceInfo
                     });
                 } else {
                     console.warn('⚠️  Mixpanel not configured - no token received');
+                    console.warn('Config data:', data);
                 }
             } else {
+                const errorText = await response.text();
                 console.error('❌ Failed to fetch Mixpanel config:', response.status);
+                console.error('Error response:', errorText);
             }
         } catch (error) {
-            console.error('❌ Failed to initialize Mixpanel:', error);
-            console.error('Error details:', {
-                message: error.message,
-                stack: error.stack
-            });
+            if (error.name === 'AbortError') {
+                console.error('❌ Mixpanel config request timed out (> 10 seconds)');
+            } else {
+                console.error('❌ Failed to initialize Mixpanel:', error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
+            }
         }
     }
 
