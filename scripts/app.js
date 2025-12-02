@@ -1791,18 +1791,39 @@ class DDayManager {
 
     async initMixpanel() {
         try {
+            // Check if Mixpanel SDK loaded
+            if (typeof mixpanel === 'undefined') {
+                console.warn('⚠️  Mixpanel SDK not loaded yet, retrying...');
+                // Retry after a delay for mobile devices with slower networks
+                setTimeout(() => this.initMixpanel(), 2000);
+                return;
+            }
+
+            console.log('🔍 Device info:', {
+                userAgent: navigator.userAgent,
+                isMobile: /Mobile|Android|iPhone/i.test(navigator.userAgent),
+                platform: navigator.platform
+            });
+
             // Get Mixpanel token from server
             const response = await fetch(`${this.apiUrl}/config/mixpanel`);
+            console.log('📡 Mixpanel config response:', response.status);
+            
             if (response.ok) {
                 const data = await response.json();
+                console.log('📊 Mixpanel config data:', data);
                 
                 if (data.token) {
                     // Initialize Mixpanel
                     mixpanel.init(data.token, {
-                        debug: false,
+                        debug: true, // Enable debug mode to see what's happening
                         track_pageview: true,
                         persistence: 'localStorage',
-                        ignore_dnt: true
+                        ignore_dnt: true,
+                        api_host: 'https://api.mixpanel.com', // Explicit HTTPS
+                        loaded: function(mixpanel) {
+                            console.log('✅ Mixpanel SDK fully loaded and initialized');
+                        }
                     });
                     
                     console.log('✅ Mixpanel analytics initialized');
@@ -1813,14 +1834,21 @@ class DDayManager {
                     // Track initial page view
                     this.trackMixpanelEvent('Page View', {
                         page: 'Home',
-                        url: window.location.href
+                        url: window.location.href,
+                        device_type: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
                     });
                 } else {
-                    console.warn('⚠️  Mixpanel not configured');
+                    console.warn('⚠️  Mixpanel not configured - no token received');
                 }
+            } else {
+                console.error('❌ Failed to fetch Mixpanel config:', response.status);
             }
         } catch (error) {
             console.error('❌ Failed to initialize Mixpanel:', error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack
+            });
         }
     }
 
@@ -1875,16 +1903,35 @@ class DDayManager {
 
     trackMixpanelEvent(eventName, properties = {}) {
         try {
-            if (typeof mixpanel !== 'undefined' && mixpanel.track) {
-                mixpanel.track(eventName, {
-                    ...properties,
-                    app_version: '1.0.0',
-                    platform: 'web',
-                    user_agent: navigator.userAgent
-                });
+            if (typeof mixpanel === 'undefined') {
+                console.warn('⚠️  Mixpanel not available for tracking:', eventName);
+                return;
             }
+            
+            if (!mixpanel.track) {
+                console.warn('⚠️  Mixpanel.track not available:', eventName);
+                return;
+            }
+
+            const eventData = {
+                ...properties,
+                app_version: '1.0.0',
+                platform: 'web',
+                user_agent: navigator.userAgent,
+                device_type: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+                screen_width: window.innerWidth,
+                screen_height: window.innerHeight
+            };
+
+            console.log('📊 Tracking event:', eventName, eventData);
+            mixpanel.track(eventName, eventData);
+            console.log('✅ Event tracked successfully:', eventName);
         } catch (error) {
-            console.error('❌ Error tracking event:', error);
+            console.error('❌ Error tracking event:', eventName, error);
+            console.error('Error details:', {
+                message: error.message,
+                stack: error.stack
+            });
         }
     }
 }
