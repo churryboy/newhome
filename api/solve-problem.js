@@ -59,17 +59,18 @@ module.exports = async (req, res) => {
 규칙:
 - 이미지의 실제 문제를 정확히 분석하고 풀이하세요
 - 수식은 LaTeX 형식으로 작성하세요
-- LaTeX의 백슬래시는 JSON에서 반드시 이중 백슬래시로 작성하세요 (예: $x^2$, $\\\\frac{a}{b}$, $\\\\sqrt{x}$, $\\\\pm$)
-- 인라인 수식은 $...$ 로 감싸고, 블록 수식은 $$...$$ 로 감싸세요
+- JSON 외에 다른 텍스트는 포함하지 마세요 (JSON만 반환)
 - 각 단계는 구체적으로 계산 과정을 보여주세요
 - 설명은 한글로 하되 수식은 LaTeX로 표현하세요
 - 최소 3단계, 최대 6단계로 구성해주세요
-- JSON 외에 다른 텍스트나 마크다운 코드 블록은 포함하지 마세요 (JSON만 반환)
 - 중학생이 이해하기 쉽게 설명해주세요
 
-**중요:** LaTeX 백슬래시는 \\\\로 두 번 써야 합니다!
-예시:
-"$f_2(3)$를 계산하면, $n=2$일 때 3의 제곱근은 $\\\\pm\\\\sqrt{3}$으로 2개입니다."`
+**LaTeX 수식 작성 규칙 (매우 중요!):**
+- 인라인 수식은 $...$ 로 감싸세요
+- 모든 LaTeX 명령어에는 백슬래시 1개만 사용하세요
+- 예시: "$\\frac{a}{b}$", "$\\sqrt{x}$", "$\\pm$", "$5^{\\frac{83}{6}}$"
+- 잘못된 예: "$\\\\frac{a}{b}$" (백슬래시 2개는 틀림!)
+- 올바른 예: "최종 답: $5^{\\frac{83}{6}}$"`
                             },
                             {
                                 type: 'image_url',
@@ -98,12 +99,28 @@ module.exports = async (req, res) => {
         console.log('AI Response:', content);
 
         // Parse JSON response
-        const jsonMatch = content.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
+        let jsonText = content;
+        
+        // Remove markdown code blocks if present
+        const codeBlockMatch = content.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (codeBlockMatch) {
+            jsonText = codeBlockMatch[1];
+        } else {
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                jsonText = jsonMatch[0];
+            }
+        }
+
+        if (!jsonText) {
             return res.status(500).json({ error: 'Failed to parse AI response' });
         }
 
-        const result = JSON.parse(jsonMatch[0]);
+        // Fix single backslashes in LaTeX (e.g., \frac -> \\frac)
+        // But preserve already-escaped backslashes (\\frac stays \\frac)
+        jsonText = jsonText.replace(/([^\\])\\([a-zA-Z])/g, '$1\\\\$2');
+
+        const result = JSON.parse(jsonText);
 
         res.json({
             solution: result,
