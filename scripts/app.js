@@ -1615,7 +1615,7 @@ class DDayManager {
                     >
                     <img src="${imageSrc}" alt="문제 이미지" class="cart-item-image">
                     <div class="cart-item-info">
-                        <div class="cart-item-title">${item.textbookName}</div>
+                        <div class="cart-item-title">${item.textbookName}의 유사 문항</div>
                         <div class="cart-item-date">${formattedDate}</div>
                     </div>
                     <div class="cart-item-price">${formattedPrice}</div>
