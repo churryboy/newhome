@@ -1477,7 +1477,7 @@ class DDayManager {
             timestamp: timestamp,
             selected: true,
             textbookName: this.textbookName,
-            price: 50 // ₩50 per item
+            price: 300 // ₩300 per item
         };
 
         console.log('📦 Adding item to cart:', {
@@ -1599,7 +1599,7 @@ class DDayManager {
         cartItemsList.innerHTML = this.cartItems.map(item => {
             const date = new Date(item.timestamp);
             const formattedDate = `${date.getMonth() + 1}월 ${date.getDate()}일 ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-            const price = item.price || 50;
+            const price = item.price || 300;
             const formattedPrice = `₩${price.toLocaleString()}`;
             
             // Use placeholder if imageData not available (after page refresh)
@@ -1687,7 +1687,7 @@ class DDayManager {
 
     updatePriceSummary() {
         const selectedItems = this.cartItems.filter(item => item.selected);
-        const subtotal = selectedItems.reduce((sum, item) => sum + (item.price || 50), 0);
+        const subtotal = selectedItems.reduce((sum, item) => sum + (item.price || 300), 0);
         const discount = 0; // Can be customized later
         const total = subtotal - discount;
 
@@ -1753,7 +1753,7 @@ class DDayManager {
             return;
         }
 
-        const total = selectedItems.reduce((sum, item) => sum + (item.price || 50), 0);
+        const total = selectedItems.reduce((sum, item) => sum + (item.price || 300), 0);
         const email = emailInput.value.trim();
         const paymentMethod = selectedPaymentMethod.value;
 
