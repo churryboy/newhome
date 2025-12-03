@@ -1318,7 +1318,7 @@ class DDayManager {
     }
 
     getVerificationContent() {
-        // Get the selected version (v1, v2, v4, or default)
+        // Get the selected version (v1, v2, v4, v5, or default)
         // Conditional words based on textbook name
         const examType = this.textbookName.includes('생각하는 황소') ? '단원평가' : '내신대비';
         const difficultyLevel = this.textbookName.includes('생각하는 황소') ? 'High Level 단계로' : '고난도 문항으로';
@@ -1344,6 +1344,11 @@ class DDayManager {
                 icon: '🔥',
                 header: '상위권 도약을 위한 필수 유형',
                 content: `이 문제는 ${this.textbookName}의 ${difficultyLevel} 확인되며, 상위권 진입을 위해 반드시 거쳐야 할 관문입니다. 최근 한 달간 검색량이 꾸준히 상승 중인 '학생들이 자주 막히는' 유형입니다.`
+            },
+            v5: {
+                icon: '🔥',
+                header: '은마 중학교 필수 문항',
+                content: '이 문제는 은마 중학교 내신 시험에 등장할 확률이 높은 문항으로 확인됩니다. 반복적인 연습을 통해서 꼭 마스터 하시기 바랍니다!'
             }
         };
         
@@ -1706,14 +1711,25 @@ class DDayManager {
 
         // Update payment button
         const paymentBtnText = document.getElementById('cartPaymentBtnText');
-        if (paymentBtnText) {
-            paymentBtnText.textContent = `₩${total.toLocaleString()} 결제하기`;
-        }
-
-        // Disable payment button if no items selected
         const paymentBtn = document.getElementById('cartPaymentBtn');
-        if (paymentBtn) {
-            paymentBtn.disabled = selectedItems.length === 0;
+        
+        // Check if total is less than minimum amount (5000)
+        const minimumAmount = 5000;
+        
+        if (paymentBtnText && paymentBtn) {
+            if (total < minimumAmount) {
+                // Show minimum purchase message
+                paymentBtnText.textContent = '최소 5천원부터 구매 가능합니다';
+                paymentBtn.disabled = true;
+            } else if (selectedItems.length === 0) {
+                // Disable if no items selected
+                paymentBtnText.textContent = `₩${total.toLocaleString()} 결제하기`;
+                paymentBtn.disabled = true;
+            } else {
+                // Normal payment button
+                paymentBtnText.textContent = `₩${total.toLocaleString()} 결제하기`;
+                paymentBtn.disabled = false;
+            }
         }
     }
 
