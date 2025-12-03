@@ -1327,7 +1327,7 @@ class DDayManager {
     }
 
     getVerificationContent() {
-        // Get the selected version (v1, v2, v4, v5, or default)
+        // Get the selected version (v1, v2, v4, v5, v6, or default)
         // Conditional words based on textbook name
         const examType = this.textbookName.includes('생각하는 황소') ? '단원평가' : '내신대비';
         const difficultyLevel = this.textbookName.includes('생각하는 황소') ? 'High Level 단계로' : '고난도 문항으로';
@@ -1358,6 +1358,11 @@ class DDayManager {
                 icon: '🔥',
                 header: `${this.schoolName} 필수 문항`,
                 content: `이 문제는 ${this.schoolName} 내신 시험에 등장할 확률이 높은 문항으로 확인됩니다. 반복적인 연습을 통해서 꼭 마스터 하시기 바랍니다!`
+            },
+            v6: {
+                icon: '📚',
+                header: `본 문항은 "${this.textbookName}"의 문제로, 다음의 경우에 활용된 것으로 확인됩니다`,
+                content: `${this.schoolName} 내신 시험\n시대인재 레벨테스트 단골 문항`
             }
         };
         
