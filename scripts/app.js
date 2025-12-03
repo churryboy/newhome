@@ -1414,7 +1414,8 @@ class DDayManager {
         // Add verification text
         const verificationText = document.createElement('p');
         verificationText.className = 'type-body';
-        verificationText.textContent = content.content;
+        // Replace line breaks with <br> tags for proper HTML rendering
+        verificationText.innerHTML = content.content.replace(/\n/g, '<br>');
         verificationContentDiv.appendChild(verificationText);
         
         // Add CTA content if not default
