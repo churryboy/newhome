@@ -2703,7 +2703,7 @@ body {
 
 .cart-content {
     padding: var(--space-lg);
-    padding-bottom: 100px;
+    padding-bottom: 200px;
 }
 
 .cart-footer {
