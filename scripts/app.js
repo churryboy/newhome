@@ -17,6 +17,7 @@ class DDayManager {
         this.energyClickCount = 0; // Track energy button clicks
         this.energyClickTimer = null; // Timer to reset click count
         this.textbookName = localStorage.getItem('textbookName') || '생각하는 황소 중1 상 ESSENCE';
+        this.schoolName = localStorage.getItem('schoolName') || '한영 외국어 고등학교';
         this.verificationVersion = localStorage.getItem('verificationVersion') || 'default';
         this.ctaVersion = localStorage.getItem('ctaVersion') || 'default';
         this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
@@ -1251,6 +1252,7 @@ class DDayManager {
     openConfigModal() {
         const modal = document.getElementById('configModalOverlay');
         const input = document.getElementById('textbookNameInput');
+        const schoolInput = document.getElementById('schoolNameInput');
         
         if (modal) {
             modal.classList.add('active');
@@ -1259,6 +1261,11 @@ class DDayManager {
             if (input) {
                 input.value = this.textbookName;
                 setTimeout(() => input.focus(), 100);
+            }
+            
+            // Pre-fill with current school name
+            if (schoolInput) {
+                schoolInput.value = this.schoolName;
             }
             
             // Pre-select the current verification version
@@ -1284,6 +1291,7 @@ class DDayManager {
 
     applyConfig() {
         const input = document.getElementById('textbookNameInput');
+        const schoolInput = document.getElementById('schoolNameInput');
         const selectedVersion = document.querySelector('input[name="verificationVersion"]:checked');
         const selectedCta = document.querySelector('input[name="ctaVersion"]:checked');
         
@@ -1292,6 +1300,13 @@ class DDayManager {
             localStorage.setItem('textbookName', this.textbookName);
             
             console.log('✅ 문제집 이름 저장:', this.textbookName);
+        }
+        
+        if (schoolInput && schoolInput.value.trim()) {
+            this.schoolName = schoolInput.value.trim();
+            localStorage.setItem('schoolName', this.schoolName);
+            
+            console.log('✅ 학교 이름 저장:', this.schoolName);
         }
         
         if (selectedVersion) {
@@ -1341,8 +1356,8 @@ class DDayManager {
             },
             v5: {
                 icon: '🔥',
-                header: '한영 외국어 고등학교 필수 문항',
-                content: '이 문제는 한영 외국어 고등학교 내신 시험에 등장할 확률이 높은 문항으로 확인됩니다. 반복적인 연습을 통해서 꼭 마스터 하시기 바랍니다!'
+                header: `${this.schoolName} 필수 문항`,
+                content: `이 문제는 ${this.schoolName} 내신 시험에 등장할 확률이 높은 문항으로 확인됩니다. 반복적인 연습을 통해서 꼭 마스터 하시기 바랍니다!`
             }
         };
         
