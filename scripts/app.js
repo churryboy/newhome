@@ -21,6 +21,7 @@ class DDayManager {
         this.verificationVersion = localStorage.getItem('verificationVersion') || 'default';
         this.ctaVersion = localStorage.getItem('ctaVersion') || 'default';
         this.cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]');
+        this.points = parseInt(localStorage.getItem('userPoints') || '0');
         // Use relative URL for API calls (works both locally and on Vercel)
         this.apiUrl = window.location.hostname === 'localhost' 
             ? 'http://localhost:3000/api' 
@@ -189,10 +190,29 @@ class DDayManager {
             cartBackBtn.addEventListener('click', () => this.closeCartView());
         }
         if (cartPaymentBtn) {
-            cartPaymentBtn.addEventListener('click', () => this.handlePayment());
+            cartPaymentBtn.addEventListener('click', () => this.openPointChargeModal());
         }
         if (paymentSuccessBtn) {
             paymentSuccessBtn.addEventListener('click', () => this.closePaymentSuccessModal());
+        }
+
+        // Point Charge Modal
+        const pointChargeCloseBtn = document.getElementById('pointChargeCloseBtn');
+        const pointChargeConfirmBtn = document.getElementById('pointChargeConfirmBtn');
+        const pointChargeModal = document.getElementById('pointChargeModal');
+
+        if (pointChargeCloseBtn) {
+            pointChargeCloseBtn.addEventListener('click', () => this.closePointChargeModal());
+        }
+        if (pointChargeConfirmBtn) {
+            pointChargeConfirmBtn.addEventListener('click', () => this.confirmPointCharge());
+        }
+        if (pointChargeModal) {
+            pointChargeModal.addEventListener('click', (e) => {
+                if (e.target === pointChargeModal) {
+                    this.closePointChargeModal();
+                }
+            });
         }
     }
 
@@ -1467,6 +1487,7 @@ class DDayManager {
         if (cartView) {
             cartView.classList.add('active');
             this.renderCartItems();
+            this.updatePointsDisplay();
         }
     }
 
@@ -1474,6 +1495,39 @@ class DDayManager {
         const cartView = document.getElementById('cartView');
         if (cartView) {
             cartView.classList.remove('active');
+        }
+    }
+
+    updatePointsDisplay() {
+        const pointsBalance = document.getElementById('pointsBalance');
+        if (pointsBalance) {
+            pointsBalance.textContent = `₩${this.points.toLocaleString()}`;
+        }
+    }
+
+    openPointChargeModal() {
+        const modal = document.getElementById('pointChargeModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    closePointChargeModal() {
+        const modal = document.getElementById('pointChargeModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    confirmPointCharge() {
+        const selectedAmount = document.querySelector('input[name="chargeAmount"]:checked');
+        if (selectedAmount) {
+            const amount = parseInt(selectedAmount.value);
+            this.points += amount;
+            localStorage.setItem('userPoints', this.points.toString());
+            this.updatePointsDisplay();
+            this.closePointChargeModal();
+            this.showToast(`₩${amount.toLocaleString()} 포인트가 충전되었습니다!`, 'success');
         }
     }
 

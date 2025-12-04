@@ -459,6 +459,16 @@
                     </div>
                 </div>
 
+                <!-- Points Balance -->
+                <div class="cart-section">
+                    <div class="points-balance-card">
+                        <div class="points-balance-header">
+                            <span class="type-subheadline">보유 포인트</span>
+                            <span class="points-balance-amount type-title2" id="pointsBalance">₩0</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Email Input -->
                 <div class="cart-section">
                     <h3 class="cart-section-title type-subheadline">이메일 주소</h3>
@@ -550,6 +560,42 @@
             <h3 class="payment-success-title type-title2">무료 구매 프로모션 기간입니다!</h3>
             <p class="payment-success-message type-body">이메일로 문제를 발송해드리겠습니다<br>좋은 공부 되세요</p>
             <button class="payment-success-btn" id="paymentSuccessBtn">확인</button>
+        </div>
+    </div>
+
+    <!-- Point Charge Modal -->
+    <div class="point-charge-modal-overlay" id="pointChargeModal" style="display: none;">
+        <div class="point-charge-modal">
+            <div class="point-charge-header">
+                <h3 class="type-title2">포인트 충전</h3>
+                <button class="point-charge-close-btn" id="pointChargeCloseBtn">✕</button>
+            </div>
+            <div class="point-charge-body">
+                <p class="type-body" style="margin-bottom: var(--space-lg); color: var(--color-neutral-40);">충전할 포인트를 선택하세요</p>
+                <div class="point-charge-options">
+                    <label class="point-charge-option">
+                        <input type="radio" name="chargeAmount" value="20000" checked>
+                        <div class="point-charge-option-content">
+                            <span class="type-headline-strong">₩20,000</span>
+                        </div>
+                    </label>
+                    <label class="point-charge-option">
+                        <input type="radio" name="chargeAmount" value="30000">
+                        <div class="point-charge-option-content">
+                            <span class="type-headline-strong">₩30,000</span>
+                        </div>
+                    </label>
+                    <label class="point-charge-option">
+                        <input type="radio" name="chargeAmount" value="50000">
+                        <div class="point-charge-option-content">
+                            <span class="type-headline-strong">₩50,000</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            <div class="point-charge-footer">
+                <button class="point-charge-btn" id="pointChargeConfirmBtn">포인트 충전하기</button>
+            </div>
         </div>
     </div>
 

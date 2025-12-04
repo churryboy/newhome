@@ -2765,6 +2765,29 @@ body {
     color: var(--color-primary-50);
 }
 
+/* Points Balance */
+.points-balance-card {
+    padding: var(--space-lg);
+    background: linear-gradient(135deg, var(--color-primary-50) 0%, #ff7c3f 100%);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.points-balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.points-balance-header .type-subheadline {
+    color: white;
+    opacity: 0.9;
+}
+
+.points-balance-amount {
+    color: white;
+}
+
 /* Email Input */
 .cart-email-input {
     width: 100%;
@@ -2946,6 +2969,124 @@ body {
 }
 
 .payment-success-btn:active {
+    transform: scale(0.98);
+}
+
+/* Point Charge Modal */
+.point-charge-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: var(--space-lg);
+}
+
+.point-charge-modal {
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+}
+
+.point-charge-header {
+    padding: var(--space-lg);
+    border-bottom: 1px solid var(--color-neutral-90);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.point-charge-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--color-neutral-40);
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s;
+}
+
+.point-charge-close-btn:hover {
+    background: var(--color-neutral-95);
+    color: var(--color-neutral-10);
+}
+
+.point-charge-body {
+    padding: var(--space-lg);
+}
+
+.point-charge-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.point-charge-option {
+    position: relative;
+    cursor: pointer;
+}
+
+.point-charge-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.point-charge-option-content {
+    padding: var(--space-lg);
+    border: 2px solid var(--color-neutral-90);
+    border-radius: var(--radius-base);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.point-charge-option input[type="radio"]:checked + .point-charge-option-content {
+    border-color: var(--color-primary-50);
+    background: var(--color-primary-100);
+}
+
+.point-charge-option:hover .point-charge-option-content {
+    border-color: var(--color-primary-50);
+}
+
+.point-charge-footer {
+    padding: var(--space-lg);
+    border-top: 1px solid var(--color-neutral-90);
+}
+
+.point-charge-btn {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--color-primary-50);
+    color: white;
+    border: none;
+    border-radius: var(--radius-base);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.point-charge-btn:hover {
+    background: var(--color-primary-40);
+}
+
+.point-charge-btn:active {
     transform: scale(0.98);
 }
 
