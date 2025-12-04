@@ -1408,8 +1408,8 @@ class DDayManager {
         const content = this.getVerificationContent();
         const ctaContent = this.getCtaContent();
         
-        // Hide verification section if default is selected
-        if (content.hide) {
+        // Hide verification section if both verification and CTA are default
+        if (content.hide && ctaContent.hide) {
             verificationSection.style.display = 'none';
             return;
         }
@@ -1417,31 +1417,37 @@ class DDayManager {
         // Show verification section
         verificationSection.style.display = 'block';
         
-        // Update icon
-        const iconSvg = verificationHeader.querySelector('svg');
-        if (iconSvg && content.icon === '🚨') {
-            // Replace star icon with alert icon for v2
-            iconSvg.innerHTML = `<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>`;
-        } else if (iconSvg && content.icon === '🔥') {
-            // Replace with fire/trending icon for v4
-            iconSvg.innerHTML = `<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>`;
-        } else if (iconSvg) {
-            // Star icon for v1
-            iconSvg.innerHTML = `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`;
-        }
-        
-        // Update text content
-        verificationTitle.innerHTML = content.header;
-        
         // Clear and rebuild verification content
         verificationContentDiv.innerHTML = '';
         
-        // Add verification text
-        const verificationText = document.createElement('p');
-        verificationText.className = 'type-body';
-        // Replace line breaks with <br> tags for proper HTML rendering
-        verificationText.innerHTML = content.content.replace(/\n/g, '<br>');
-        verificationContentDiv.appendChild(verificationText);
+        // Only show verification content if not default
+        if (!content.hide) {
+            // Update icon
+            const iconSvg = verificationHeader.querySelector('svg');
+            if (iconSvg && content.icon === '🚨') {
+                // Replace star icon with alert icon for v2
+                iconSvg.innerHTML = `<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>`;
+            } else if (iconSvg && content.icon === '🔥') {
+                // Replace with fire/trending icon for v4
+                iconSvg.innerHTML = `<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>`;
+            } else if (iconSvg) {
+                // Star icon for v1
+                iconSvg.innerHTML = `<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>`;
+            }
+            
+            // Update text content
+            verificationTitle.innerHTML = content.header;
+            
+            // Add verification text
+            const verificationText = document.createElement('p');
+            verificationText.className = 'type-body';
+            // Replace line breaks with <br> tags for proper HTML rendering
+            verificationText.innerHTML = content.content.replace(/\n/g, '<br>');
+            verificationContentDiv.appendChild(verificationText);
+        } else {
+            // If verification is default but CTA is selected, hide the header
+            verificationHeader.style.display = 'none';
+        }
         
         // Add CTA content if not default
         if (!ctaContent.hide) {
@@ -1455,6 +1461,11 @@ class DDayManager {
             ctaButton.textContent = ctaContent.button;
             ctaButton.addEventListener('click', () => this.addToCart());
             verificationContentDiv.appendChild(ctaButton);
+        }
+        
+        // Show header if verification content exists
+        if (!content.hide) {
+            verificationHeader.style.display = 'flex';
         }
     }
 
