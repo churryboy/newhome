@@ -1531,6 +1531,7 @@ class DDayManager {
             this.points += amount;
             localStorage.setItem('userPoints', this.points.toString());
             this.updatePointsDisplay();
+            this.updatePriceSummary(); // Update button state immediately
             this.closePointChargeModal();
             this.showToast(`₩${amount.toLocaleString()} 포인트가 충전되었습니다!`, 'success');
         }
