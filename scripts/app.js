@@ -190,17 +190,22 @@ class DDayManager {
             cartBackBtn.addEventListener('click', () => this.closeCartView());
         }
         if (cartPaymentBtn) {
-            cartPaymentBtn.addEventListener('click', () => this.openPointChargeModal());
+            cartPaymentBtn.addEventListener('click', () => this.handlePayment());
         }
         if (paymentSuccessBtn) {
             paymentSuccessBtn.addEventListener('click', () => this.closePaymentSuccessModal());
         }
 
         // Point Charge Modal
+        const pointsBalanceCard = document.querySelector('.points-balance-card');
         const pointChargeCloseBtn = document.getElementById('pointChargeCloseBtn');
         const pointChargeConfirmBtn = document.getElementById('pointChargeConfirmBtn');
         const pointChargeModal = document.getElementById('pointChargeModal');
 
+        if (pointsBalanceCard) {
+            pointsBalanceCard.addEventListener('click', () => this.openPointChargeModal());
+            pointsBalanceCard.style.cursor = 'pointer';
+        }
         if (pointChargeCloseBtn) {
             pointChargeCloseBtn.addEventListener('click', () => this.closePointChargeModal());
         }
@@ -1782,17 +1787,14 @@ class DDayManager {
         const paymentBtnText = document.getElementById('cartPaymentBtnText');
         const paymentBtn = document.getElementById('cartPaymentBtn');
         
-        // Check if total is less than minimum amount (5000)
-        const minimumAmount = 5000;
-        
         if (paymentBtnText && paymentBtn) {
-            if (total < minimumAmount) {
-                // Show minimum purchase message
-                paymentBtnText.textContent = '최소 5천원부터 구매 가능합니다';
-                paymentBtn.disabled = true;
-            } else if (selectedItems.length === 0) {
+            if (selectedItems.length === 0) {
                 // Disable if no items selected
                 paymentBtnText.textContent = `₩${total.toLocaleString()} 결제하기`;
+                paymentBtn.disabled = true;
+            } else if (this.points < total) {
+                // Show insufficient balance message
+                paymentBtnText.textContent = '포인트가 부족합니다';
                 paymentBtn.disabled = true;
             } else {
                 // Normal payment button
@@ -1826,11 +1828,28 @@ class DDayManager {
         const email = emailInput.value.trim();
         const paymentMethod = selectedPaymentMethod.value;
 
+        // Check if user has sufficient points
+        if (this.points < total) {
+            this.showToast('포인트가 부족합니다', 'error');
+            return;
+        }
+
         console.log('💳 Processing payment:', {
             items: selectedItems.length,
             total: total,
             email: email,
-            paymentMethod: paymentMethod
+            paymentMethod: paymentMethod,
+            currentPoints: this.points
+        });
+
+        // Deduct points from balance
+        this.points -= total;
+        localStorage.setItem('userPoints', this.points.toString());
+        this.updatePointsDisplay();
+
+        console.log('✅ Points deducted:', {
+            deducted: total,
+            remaining: this.points
         });
 
         // Save data to Google Sheets
